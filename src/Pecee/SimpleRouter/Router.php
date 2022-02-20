@@ -28,9 +28,9 @@ class Router
 
     /**
      * Current request
-     * @var Request
+     * @var Request|null
      */
-    protected Request $request;
+    protected ?Request $request;
 
     /**
      * Defines if a route is currently being processed.
@@ -449,7 +449,7 @@ class Router
         }
 
         if ($methodNotAllowed === true) {
-            $message = sprintf('Route "%s" or method "%s" not allowed.', $this->request->getUrl()->getPath(), $this->request->getMethod());
+            $message = sprintf('Route "%s" or method "%s" not allowed.', $this->getRequest()->getUrl()->getPath(), $this->getRequest()->getMethod());
             $output = $this->handleException(new NotFoundHttpException($message, 403));
             if ($output !== null) {
                 return $output;

@@ -45,6 +45,10 @@ abstract class Route implements IRoute
     protected array $parameters = [];
     protected array $originalParameters = [];
     protected array $middlewares = [];
+    /**
+     * @var InputValidator|array|null
+     */
+    protected $inputValidator = null;
 
     /**
      * Render route

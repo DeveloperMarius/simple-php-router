@@ -93,9 +93,9 @@ class Request
 
     /**
      * Input handler
-     * @var IInputHandler
+     * @var IInputHandler|null
      */
-    protected InputHandler $inputHandler;
+    protected ?IInputHandler $inputHandler = null;
 
     /**
      * Defines if request has pending rewrite
