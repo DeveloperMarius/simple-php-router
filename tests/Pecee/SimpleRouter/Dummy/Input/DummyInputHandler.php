@@ -78,7 +78,7 @@ class DummyInputHandler implements IInputHandler
             if (strpos(trim($contents), '{') === 0) {
                 $post = json_decode($contents, true);
 
-                if ($post !== false) {
+                if ($post !== null) {
                     $this->originalPost += $post;
                 }
             }
