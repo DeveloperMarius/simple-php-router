@@ -4,6 +4,7 @@ namespace Pecee\SimpleRouter\Route;
 
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Request;
+use Pecee\SimpleRouter\Exceptions\NotFoundHttpException;
 use Pecee\SimpleRouter\Router;
 
 interface IRoute
@@ -24,7 +25,7 @@ interface IRoute
      * @param Request $request
      * @param Router $router
      * @return string
-     * @throws \Pecee\SimpleRouter\Exceptions\NotFoundHttpException
+     * @throws NotFoundHttpException
      */
     public function renderRoute(Request $request, Router $router): ?string;
 
