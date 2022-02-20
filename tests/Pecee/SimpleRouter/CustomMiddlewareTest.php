@@ -1,5 +1,7 @@
 <?php
 
+use Pecee\Http\Request;
+
 require_once 'Dummy/DummyController.php';
 require_once 'Dummy/Middleware/IpRestrictMiddleware.php';
 
@@ -17,6 +19,10 @@ class CustomMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $_SERVER['remote-addr'] = '5.5.5.5';
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         TestRouter::group(['middleware' => IpRestrictMiddleware::class], function() {
             TestRouter::get('/fail', 'DummyController@method1');
         });
@@ -29,6 +35,10 @@ class CustomMiddlewareTest extends \PHPUnit\Framework\TestCase
         TestRouter::resetRouter();
 
         $_SERVER['remote-addr'] = '8.8.4.4';
+
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
 
         TestRouter::group(['middleware' => IpRestrictMiddleware::class], function() {
             TestRouter::get('/fail', 'DummyController@method1');

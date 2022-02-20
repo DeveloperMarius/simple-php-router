@@ -4,6 +4,7 @@ use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Input\InputValidatorItem;
 use Pecee\Http\Input\ValidatorRules\ValidatorRuleCustom;
+use Pecee\Http\Request;
 
 require_once 'Dummy/InputValidatorRules/ValidatorRuleCustomTest.php';
 require_once 'Dummy/DummyController.php';
@@ -21,6 +22,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'email' => 'user@provider.com',
             'ip' => '192.168.105.22',
         ];
+
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
 
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs(
@@ -59,6 +64,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'ip' => '192.168.1s05.22',
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method1')
             ->validateInputs(
@@ -95,6 +104,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'ip' => '192.168.105.22',
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
                 'fullname' => 'string|max:14|starts_with:Max|ends_with:mann',
@@ -121,6 +134,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'ip' => '192.168.1s05.22',
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method1')
             ->validateInputs([
@@ -146,6 +163,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'ip' => '192.168.1s05.22',
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method1')
             ->validateInputs([
@@ -170,6 +191,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'customParam' => 'customValue'
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
                 'customParam' => 'customTest'
@@ -191,6 +216,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'customParam' => 'notCustomValue'
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
@@ -208,6 +237,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         $_GET = [
             'customParam' => 'customValue'
         ];
+
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
 
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
@@ -228,6 +261,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'customParam' => 'notCustomValue'
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
@@ -245,6 +282,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         $_GET = [
             'customParam' => 'notCustomValue'
         ];
+
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
 
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
@@ -269,6 +310,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'customParam' => 'notCustomValue'
         ];
 
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
+
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method3')
             ->validateInputs([
@@ -290,6 +335,10 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         $_GET = [
             'emailAddress' => 1
         ];
+
+        $request = new Request(false);
+        $request->setMethod('get');
+        TestRouter::setRequest($request);
 
         $this->expectException(InputValidationException::class);
         TestRouter::get('/my/test/url', 'DummyController@method3')

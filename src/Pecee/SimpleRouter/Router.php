@@ -136,12 +136,11 @@ class Router
         $this->debugStartTime = microtime(true);
         $this->isProcessingRoute = false;
 
-        $this->request = null;
-        /*try {
+        try {
             $this->request = new Request();
         } catch (MalformedUrlException $e) {
             $this->debug(sprintf('Invalid request-uri url: %s', $e->getMessage()));
-        }*/
+        }
 
         $this->routes = [];
         $this->bootManagers = [];
@@ -824,7 +823,7 @@ class Router
     public function getRequest(): Request
     {
         if($this->request === null){
-            $this->request = new Request(true);
+            $this->request = new Request();
         }
         return $this->request;
     }
@@ -836,7 +835,8 @@ class Router
      */
     public function setRequest(Request $request): void
     {
-        $request->fetch();
+        if(!$request->isInputFetched())
+            $request->fetch();
         $this->request = $request;
     }
 

@@ -3,13 +3,11 @@
 namespace Pecee\Http;
 
 use Pecee\Http\Exceptions\MalformedUrlException;
-use Pecee\Http\Input\BaseInputHandler;
 use Pecee\Http\Input\IInputHandler;
+use Pecee\Http\Input\InputHandler;
 use Pecee\Http\Input\InputValidator;
-use Pecee\Http\Input\InputValidatorItem;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\SimpleRouter\Route\ILoadableRoute;
-use Pecee\SimpleRouter\Route\LoadableRoute;
 use Pecee\SimpleRouter\Route\RouteUrl;
 use Pecee\SimpleRouter\SimpleRouter;
 
@@ -93,9 +91,9 @@ class Request
 
     /**
      * Input handler
-     * @var IInputHandler|null
+     * @var InputHandler|null
      */
-    protected ?IInputHandler $inputHandler = null;
+    protected ?InputHandler $inputHandler = null;
 
     /**
      * Defines if request has pending rewrite
@@ -118,12 +116,15 @@ class Request
      * @var array
      */
     protected array $loadedRoutes = [];
+    /**
+     * @var bool $inputFetched
+     */
+    protected bool $inputFetched = false;
 
     /**
      * Request constructor.
-     * @param bool $autoFetch
      */
-    public function __construct(bool $autoFetch = false)
+    public function __construct(bool $autoFetch = true)
     {
         $this->headers = [];
         foreach ($_SERVER as $key => $value) {
@@ -141,9 +142,9 @@ class Request
         }
         $this->setContentType((string)$this->getHeader('content-type'));
         $this->setMethod((string)($_POST[static::FORCE_METHOD_KEY] ?? $this->getHeader('request-method')));
-        if($autoFetch){
+
+        if($autoFetch)
             $this->fetch();
-        }
     }
 
     /**
@@ -151,9 +152,15 @@ class Request
      */
     public function fetch()
     {
-        if($this->inputHandler === null)
-            $this->inputHandler = new BaseInputHandler();
-        $this->getInputHandler()->parseInputs($this);
+        $this->inputFetched = true;
+        $this->inputHandler = new InputHandler($this);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInputFetched(): bool{
+        return $this->inputFetched;
     }
 
     /**
@@ -357,19 +364,11 @@ class Request
 
     /**
      * Get input class
-     * @return IInputHandler
+     * @return InputHandler|null
      */
-    public function getInputHandler(): IInputHandler
+    public function getInputHandler(): ?InputHandler
     {
         return $this->inputHandler;
-    }
-
-    /**
-     * @param IInputHandler $inputHandler
-     * @return void
-     */
-    public function setInputHandler(IInputHandler $inputHandler){
-        $this->inputHandler = $inputHandler;
     }
 
     /**

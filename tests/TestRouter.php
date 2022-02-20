@@ -52,6 +52,7 @@ class TestRouter extends \Pecee\SimpleRouter\SimpleRouter
         global $_SERVER;
         unset($_SERVER['content_type']);
         unset($_SERVER['remote_addr']);
+        unset($_SERVER['remote-addr']);
         unset($_SERVER['http-cf-connecting-ip']);
         unset($_SERVER['http-client-ip']);
         unset($_SERVER['http-x-forwarded-for']);

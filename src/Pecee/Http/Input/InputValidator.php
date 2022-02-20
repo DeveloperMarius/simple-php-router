@@ -157,9 +157,6 @@ class InputValidator
         $inputHandler = $request->getInputHandler();
         foreach ($this->getItems() as $item) {
             $inputItem = $inputHandler->find($item->getKey());
-            if (!$inputItem instanceof IInputItem) {
-                $inputItem = new InputItem($item->getKey(), $inputItem);
-            }
             $callback = $item->validate($inputItem);
             if (!$callback)
                 $this->errors[] = $item;

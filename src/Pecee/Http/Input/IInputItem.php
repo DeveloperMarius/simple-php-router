@@ -23,6 +23,10 @@ interface IInputItem
      */
     public function setValue($value): self;
 
+    public function hasInputItems(): bool;
+
+    public function getInputItems(): array;
+
     public function __toString(): string;
 
 }

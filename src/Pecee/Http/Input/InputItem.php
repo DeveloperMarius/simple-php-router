@@ -2,11 +2,11 @@
 
 namespace Pecee\Http\Input;
 
-use ArrayAccess;
+//use ArrayAccess;
 use ArrayIterator;
 use IteratorAggregate;
 
-class InputItem implements ArrayAccess, IInputItem, IteratorAggregate
+class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
 {
 
     /**
@@ -79,7 +79,49 @@ class InputItem implements ArrayAccess, IInputItem, IteratorAggregate
      */
     public function getValue()
     {
+        if(is_array($this->value)){
+            return $this->parseValueFromArray($this->value);
+        }
         return $this->value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasInputItems(): bool
+    {
+        return is_array($this->value);
+    }
+
+    /**
+     * @return InputItem[]
+     */
+    public function getInputItems(): array
+    {
+        if(is_array($this->value)){
+            return $this->value;
+        }
+        return array();
+    }
+
+    /**
+     * @param array $array
+     * @return array
+     */
+    protected function parseValueFromArray(array $array): array
+    {
+        $output = [];
+        /* @var $item InputItem */
+        foreach ($array as $key => $item) {
+
+            if ($item instanceof IInputItem) {
+                $item = $item->getValue();
+            }
+
+            $output[$key] = is_array($item) ? $this->parseValueFromArray($item) : $item;
+        }
+
+        return $output;
     }
 
     /**
@@ -94,7 +136,8 @@ class InputItem implements ArrayAccess, IInputItem, IteratorAggregate
         return $this;
     }
 
-    public function offsetExists($offset): bool
+    //TODO integrate into php 8 update
+    /*public function offsetExists($offset): bool
     {
         return isset($this->value[$offset]);
     }
@@ -116,13 +159,11 @@ class InputItem implements ArrayAccess, IInputItem, IteratorAggregate
     public function offsetUnset($offset): void
     {
         unset($this->value[$offset]);
-    }
+    }*/
 
     public function __toString(): string
     {
-        $value = $this->getValue();
-
-        return (is_array($value) === true) ? json_encode($value) : $value;
+        return $this->getIndex() . ':' . json_encode($this->getValue());
     }
 
     public function getIterator(): ArrayIterator
