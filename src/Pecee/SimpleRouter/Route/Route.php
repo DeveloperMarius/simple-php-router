@@ -105,7 +105,7 @@ abstract class Route implements IRoute
         $class = $router->getClassLoader()->loadClass($className);
 
         if ($method === null) {
-            $controller[1] = '__invoke';
+            $method = '__invoke';
         }
 
         if (method_exists($class, $method) === false) {
