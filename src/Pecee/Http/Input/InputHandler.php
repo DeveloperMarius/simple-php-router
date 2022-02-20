@@ -302,7 +302,7 @@ class InputHandler implements IInputHandler{
     /**
      * Get input element value matching index
      *
-     * @param array $filter
+     * @param array<string>|array<string, callable> $filter
      * @return array
      */
     public function values(array $filter = []): array
@@ -337,6 +337,7 @@ class InputHandler implements IInputHandler{
      * @param string $index
      * @param mixed $defaultValue
      * @return InputItem
+     * @deprecated Use $item->data() instead
      */
     public function post(string $index, $defaultValue = null): InputItem
     {
@@ -394,11 +395,20 @@ class InputHandler implements IInputHandler{
     {
         $output = $this->data + $this->get + $this->file;
 
-        $output = (count($filter) > 0) ? array_intersect_key($output, array_flip($filter)) : $output;
+        $keys = count($filter) > 0 && !is_numeric(array_key_first($filter)) ? array_keys($filter) : $filter;
 
-        foreach ($filter as $filterKey) {
+        $output = (count($keys) > 0) ? array_intersect_key($output, array_flip($keys)) : $output;
+
+        foreach ($filter as $filterKey => $parser) {
+            if(is_numeric($filterKey)){
+                $filterKey = $parser;
+                $parser = null;
+            }
             if (array_key_exists($filterKey, $output) === false) {
                 $output[$filterKey] = new InputItem($filterKey);
+            }
+            if($parser !== null){
+                $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
             }
         }
 
@@ -515,40 +525,6 @@ class InputHandler implements IInputHandler{
         $this->originalFile = $file;
 
         return $this;
-    }
-
-    /**
-     * @param string $index
-     * @param callable|null $validator
-     * @return mixed
-     */
-    public function parseParameter(string $index, callable $validator = null)
-    {
-        $value = $this->find($index);
-        if($validator !== null){
-            return $validator($value);
-        }
-        return $value;
-    }
-
-    /**
-     * <p>Parameters can be a sequential array with a list of index.</p>
-     * <p>When the Parameter is associative, the key is an index and the value is a callable which have to return the processed value.</p>
-     * <p>The first parameter of the callable is an InputItem or InputFile.</p>
-     * @param array<string>|array<string, callable> $parameters
-     * @return array|true
-     */
-    public function parseParameters(array $parameters = array()): array
-    {
-        $values = array();
-        foreach($parameters as $index => $validator){
-            if(is_numeric($index)){
-                $index = $validator;
-                $validator = null;
-            }
-            $values[] = $this->parseParameter($index, $validator);
-        }
-        return $values;
     }
 
 }

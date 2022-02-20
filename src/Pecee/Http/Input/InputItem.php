@@ -136,6 +136,13 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
         return $this;
     }
 
+    /**
+     * @return InputParser
+     */
+    public function parser(): InputParser{
+        return new InputParser($this);
+    }
+
     //TODO integrate into php 8 update
     /*public function offsetExists($offset): bool
     {
