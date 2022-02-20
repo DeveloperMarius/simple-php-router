@@ -501,7 +501,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'isAdmin' => 'false',
             'email' => 'user@provider.com',
             'ip' => '192.168.105.22',
-            'company' => 1
+            'company' => null
         ];
 
         $request = new Request(false);
