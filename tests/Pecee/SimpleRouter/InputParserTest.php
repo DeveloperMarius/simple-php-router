@@ -1,6 +1,9 @@
 <?php
 
+use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputItem;
+use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Request;
 
 require_once 'Dummy/InputValidatorRules/ValidatorRuleCustomTest.php';
@@ -94,6 +97,36 @@ class InputParserTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals('illegal word', $data['custom2']->getValue());
         });
         TestRouter::debug('/my/test/url', 'get');
+    }
+
+    public function testAttributeValidatorRules(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'isUser' => 'he is',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        TestRouter::post('/my/test/url', #[RouteAttribute('isAdmin', 'bool')] function (){
+            $data = TestRouter::request()->getInputHandler()->requireAttributes();
+            $this->assertEquals(false, $data['isAdmin']->getValue());
+            $this->assertIsBool($data['isAdmin']->getValue());
+            return 'success';
+        });
+
+        $output = TestRouter::debugOutput('/my/test/url', 'post');
+
+        $this->assertEquals('success', $output);
+
     }
 
 }

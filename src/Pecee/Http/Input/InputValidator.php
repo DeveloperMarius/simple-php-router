@@ -3,12 +3,24 @@
 namespace Pecee\Http\Input;
 
 use Closure;
+use Pecee\Http\Input\Attributes\RouteAttribute;
 use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
+use Pecee\SimpleRouter\Route\IRoute;
+use Pecee\SimpleRouter\Router;
+use Pecee\SimpleRouter\SimpleRouter;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionMethod;
 
 class InputValidator
 {
+
+    /**
+     * @var bool $parseAttributes
+     */
+    public static bool $parseAttributes = false;
 
     /* Static config settings */
 
@@ -202,5 +214,78 @@ class InputValidator
         if ($this->valid === null)
             throw new InputsNotValidatedException();
         return $this->errors;
+    }
+
+    /**
+     * @param Router $router
+     * @param IRoute $route
+     * @return InputValidator|null
+     * @since 8.0
+     */
+    public static function parseValidatorFromRoute(Router $router, IRoute $route): ?InputValidator{
+        $routeAttributeValidator = null;
+        if(InputValidator::$parseAttributes){
+            $reflectionMethod = self::getReflection($router, $route);
+            if($reflectionMethod !== null){
+                $attributes = $reflectionMethod->getAttributes(RouteAttribute::class);
+                if(sizeof($attributes) > 0){
+                    $settings = array();
+                    foreach($attributes as $attribute){
+                        /* @var RouteAttribute $routeAttribute */
+                        $routeAttribute = $attribute->newInstance();
+                        $validatorSetting = $routeAttribute->getType();
+                        if($routeAttribute->getValidator() !== null){
+                            $validatorSetting .= '|' . $routeAttribute->getValidator();
+                        }
+                        $settings[$routeAttribute->getName()] = $validatorSetting;
+                    }
+                    $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
+                }
+            }
+        }
+        return $routeAttributeValidator;
+    }
+
+    /**
+     * @param Router $router
+     * @param IRoute|null $route
+     * @return ReflectionFunction|ReflectionMethod|null
+     */
+    public static function getReflection(Router $router, ?IRoute $route = null){
+        $reflectionMethod = null;
+        if($route === null){
+            $route = SimpleRouter::request()->getLoadedRoute();
+        }
+        $callback = $route->getCallback();
+        try{
+            if($callback !== null){
+                if(is_callable($callback) === true){
+                    /* Load class from type hinting */
+                    if(is_array($callback) === true && isset($callback[0], $callback[1]) === true){
+                        $callback[0] = $router->getClassLoader()->loadClass($callback[0]);
+                    }
+
+                    /* When the callback is a function */
+                    $reflectionMethod = is_array($callback) ? new ReflectionMethod($callback[0], $callback[1]) : ($callback instanceof Closure ? new ReflectionFunction($callback) : new ReflectionMethod($callback));
+                } else {
+
+                    $controller = $route->getClass();
+                    $method = $route->getMethod();
+
+                    $namespace = $route->getNamespace();
+                    $className = ($namespace !== null && $controller[0] !== '\\') ? $namespace . '\\' . $controller : $controller;
+                    $class = $router->getClassLoader()->loadClass($className);
+
+                    if($method === null){
+                        $method = '__invoke';
+                    }
+
+                    if(method_exists($class, $method) !== false){
+                        $reflectionMethod = new ReflectionMethod($class, $method);
+                    }
+                }
+            }
+        }catch(ReflectionException $e){}
+        return $reflectionMethod;
     }
 }

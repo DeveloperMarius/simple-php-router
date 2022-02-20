@@ -1,5 +1,6 @@
 <?php
 
+use Pecee\Http\Input\Attributes\RouteAttribute;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Input\InputValidatorItem;
@@ -347,6 +348,174 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             ]);
 
         TestRouter::debug('/my/test/url', 'get');
+    }
+
+    public function testAttributeValidatorRules(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:50')] function (){
+            return 'success';
+        });
+
+        $output = TestRouter::debugOutput('/my/test/url', 'post');
+
+        $this->assertEquals('success', $output);
+
+    }
+
+    public function testAttributeValidatorRulesFailed(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        $this->expectException(InputValidationException::class);
+        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:6')] function (){
+
+        });
+
+        TestRouter::debug('/my/test/url', 'post');
+    }
+
+    public function testAttributeValidatorRules2(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+            'company' => 'Intel'
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        TestRouter::post('/my/test/url', 'DummyController@method4');
+
+        $output = TestRouter::debugOutput('/my/test/url', 'post');
+
+        $this->assertEquals('method4', $output);
+
+    }
+
+    public function testAttributeValidatorRulesFailed2(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        $this->expectException(InputValidationException::class);
+        TestRouter::post('/my/test/url', 'DummyController@method4');
+
+        TestRouter::debug('/my/test/url', 'post');
+    }
+
+    public function testAttributeValidatorRulesFailed3(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22'
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        $this->expectException(InputValidationException::class);
+        TestRouter::post('/my/test/url', 'DummyController@method4');
+
+        TestRouter::debug('/my/test/url', 'post');
+    }
+
+    public function testAttributeValidatorRulesFailed4(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22'
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        $this->expectException(InputValidationException::class);
+        TestRouter::post('/my/test/url', ['DummyController', 'method4']);
+
+        TestRouter::debug('/my/test/url', 'post');
+    }
+
+    public function testAttributeValidatorRules3(){
+        InputValidator::$parseAttributes = true;
+        TestRouter::resetRouter();
+        global $_POST;
+
+        $_POST = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+            'company' => 1
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:20'),RouteAttribute('company', 'string', 'nullable')] function (){
+            return 'success';
+        });
+
+        $output = TestRouter::debugOutput('/my/test/url', 'post');
+
+        $this->assertEquals('success', $output);
+
     }
 
 }

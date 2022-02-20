@@ -2,10 +2,8 @@
 
 namespace Pecee\Http\Input\ValidatorRules;
 
-use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\IInputItem;
 use Pecee\Http\Input\InputFile;
-use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Input\InputValidatorRule;
 
 class ValidatorRuleMin extends InputValidatorRule

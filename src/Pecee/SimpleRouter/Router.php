@@ -5,7 +5,9 @@ namespace Pecee\SimpleRouter;
 use Exception;
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Exceptions\MalformedUrlException;
+use Pecee\Http\Input\Attributes\RouteAttribute;
 use Pecee\Http\Input\Exceptions\InputValidationException;
+use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\Http\Middleware\Exceptions\TokenMismatchException;
 use Pecee\Http\Request;
@@ -22,6 +24,7 @@ use Pecee\SimpleRouter\Route\IGroupRoute;
 use Pecee\SimpleRouter\Route\ILoadableRoute;
 use Pecee\SimpleRouter\Route\IPartialGroupRoute;
 use Pecee\SimpleRouter\Route\IRoute;
+use ReflectionMethod;
 
 class Router
 {
@@ -404,12 +407,18 @@ class Router
                         return $output;
                     }
 
-                    if($route instanceof IRoute && $route->getInputValidator() !== null){
-                        $this->getRequest()->validate($route->getInputValidator());
+                    if($route instanceof IRoute){
+                        $routeAttributeValidator = InputValidator::parseValidatorFromRoute($this, $route);
+                        if($route->getInputValidator() !== null || $routeAttributeValidator !== null){
+                            if($route->getInputValidator() !== null)
+                                $this->getRequest()->validate($route->getInputValidator());
+                            if($routeAttributeValidator !== null)
+                                $this->getRequest()->validate($routeAttributeValidator);
 
-                        $output = $this->handleRouteRewrite($key, $url);
-                        if($output !== null){
-                            return $output;
+                            $output = $this->handleRouteRewrite($key, $url);
+                            if($output !== null){
+                                return $output;
+                            }
                         }
                     }
 

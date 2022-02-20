@@ -3,7 +3,9 @@
 namespace Pecee\Http\Input;
 
 use Pecee\Exceptions\InvalidArgumentException;
+use Pecee\Http\Input\Attributes\RouteAttribute;
 use Pecee\Http\Request;
+use Pecee\SimpleRouter\SimpleRouter;
 
 class InputHandler implements IInputHandler{
 
@@ -388,7 +390,7 @@ class InputHandler implements IInputHandler{
 
     /**
      * Get all get/post/file items
-     * @param array $filter Only take items in filter
+     * @param array<string>|array<string, callable> $filter Only take items in filter
      * @return array<string, IInputItem>
      */
     public function all(array $filter = []): array
@@ -413,6 +415,36 @@ class InputHandler implements IInputHandler{
         }
 
         return $output;
+    }
+
+    /**
+     * @return IInputItem[]
+     */
+    public function requireAttributes(): array{
+        $reflection = InputValidator::getReflection(SimpleRouter::router());
+        $attributes = $reflection->getAttributes(RouteAttribute::class);
+        $filter = array();
+        foreach($attributes as $attribute){
+            /* @var RouteAttribute $routeAttribute */
+            $routeAttribute = $attribute->newInstance();
+            $filter[$routeAttribute->getName()] = $routeAttribute->getType();
+        }
+        return $this->all($filter);
+    }
+
+    /**
+     * @return array
+     */
+    public function requireAttributeValues(): array{
+        $reflection = InputValidator::getReflection(SimpleRouter::router());
+        $attributes = $reflection->getAttributes(RouteAttribute::class);
+        $filter = array();
+        foreach($attributes as $attribute){
+            /* @var RouteAttribute $routeAttribute */
+            $routeAttribute = $attribute->newInstance();
+            $filter[$routeAttribute->getName()] = $routeAttribute->getType();
+        }
+        return $this->values($filter);
     }
 
     /**

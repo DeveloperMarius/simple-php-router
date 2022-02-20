@@ -1,5 +1,8 @@
 <?php
 
+use Pecee\Http\Input\Attributes\Route;
+use Pecee\Http\Input\Attributes\RouteAttribute;
+
 class DummyController
 {
     public function index()
@@ -21,6 +24,16 @@ class DummyController
     public function method3()
     {
         return 'method3';
+    }
+
+    #[
+        Route(Route::POST, '/my/test/url'),
+        RouteAttribute('fullname', 'string', 'min:5|max:20'),
+        RouteAttribute('company', 'string')
+    ]
+    public function method4()
+    {
+        return 'method4';
     }
 
     public function param($params = null)
