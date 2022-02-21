@@ -3,7 +3,7 @@
 namespace Pecee\Http\Input;
 
 use Closure;
-use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
 use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
@@ -227,11 +227,11 @@ class InputValidator
         if(InputValidator::$parseAttributes){
             $reflectionMethod = self::getReflection($router, $route);
             if($reflectionMethod !== null){
-                $attributes = $reflectionMethod->getAttributes(RouteAttribute::class);
+                $attributes = $reflectionMethod->getAttributes(ValidatorAttribute::class);
                 if(sizeof($attributes) > 0){
                     $settings = array();
                     foreach($attributes as $attribute){
-                        /* @var RouteAttribute $routeAttribute */
+                        /* @var ValidatorAttribute $routeAttribute */
                         $routeAttribute = $attribute->newInstance();
                         $validatorSetting = $routeAttribute->getType();
                         if($routeAttribute->getValidator() !== null){

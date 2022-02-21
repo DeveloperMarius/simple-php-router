@@ -1,6 +1,6 @@
 <?php
 
-use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Input\InputValidatorItem;
@@ -366,7 +366,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         $request->setMethod('post');
         TestRouter::setRequest($request);
 
-        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:50')] function (){
+        TestRouter::post('/my/test/url', #[ValidatorAttribute('fullname', 'string', 'min:5|max:50')] function (){
             return 'success';
         });
 
@@ -393,7 +393,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         TestRouter::setRequest($request);
 
         $this->expectException(InputValidationException::class);
-        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:6')] function (){
+        TestRouter::post('/my/test/url', #[ValidatorAttribute('fullname', 'string', 'min:5|max:6')] function (){
 
         });
 
@@ -508,7 +508,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         $request->setMethod('post');
         TestRouter::setRequest($request);
 
-        TestRouter::post('/my/test/url', #[RouteAttribute('fullname', 'string', 'min:5|max:20'),RouteAttribute('company', 'string', 'nullable')] function (){
+        TestRouter::post('/my/test/url', #[ValidatorAttribute('fullname', 'string', 'min:5|max:20'),ValidatorAttribute('company', 'string', 'nullable')] function (){
             return 'success';
         });
 

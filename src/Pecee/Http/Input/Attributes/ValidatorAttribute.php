@@ -9,8 +9,8 @@ use Attribute;
  *
  * @since 8.0
  */
-#[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_FUNCTION|Attribute::IS_REPEATABLE)]
-class RouteAttribute{
+#[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_FUNCTION|Attribute::IS_REPEATABLE|Attribute::TARGET_CLASS)]
+class ValidatorAttribute{
 
     /**
      * @param string $name

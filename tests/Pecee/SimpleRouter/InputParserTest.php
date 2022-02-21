@@ -1,6 +1,6 @@
 <?php
 
-use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputItem;
 use Pecee\Http\Input\InputValidator;
@@ -116,7 +116,7 @@ class InputParserTest extends \PHPUnit\Framework\TestCase
         $request->setMethod('post');
         TestRouter::setRequest($request);
 
-        TestRouter::post('/my/test/url', #[RouteAttribute('isAdmin', 'bool')] function (){
+        TestRouter::post('/my/test/url', #[ValidatorAttribute('isAdmin', 'bool')] function (){
             $data = TestRouter::request()->getInputHandler()->requireAttributes();
             $this->assertEquals(false, $data['isAdmin']->getValue());
             $this->assertIsBool($data['isAdmin']->getValue());

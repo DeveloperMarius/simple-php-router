@@ -3,7 +3,7 @@
 namespace Pecee\Http\Input;
 
 use Pecee\Exceptions\InvalidArgumentException;
-use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
 
@@ -422,10 +422,10 @@ class InputHandler implements IInputHandler{
      */
     public function requireAttributes(): array{
         $reflection = InputValidator::getReflection(SimpleRouter::router());
-        $attributes = $reflection->getAttributes(RouteAttribute::class);
+        $attributes = $reflection->getAttributes(ValidatorAttribute::class);
         $filter = array();
         foreach($attributes as $attribute){
-            /* @var RouteAttribute $routeAttribute */
+            /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
             $filter[$routeAttribute->getName()] = $routeAttribute->getType();
         }
@@ -437,10 +437,10 @@ class InputHandler implements IInputHandler{
      */
     public function requireAttributeValues(): array{
         $reflection = InputValidator::getReflection(SimpleRouter::router());
-        $attributes = $reflection->getAttributes(RouteAttribute::class);
+        $attributes = $reflection->getAttributes(ValidatorAttribute::class);
         $filter = array();
         foreach($attributes as $attribute){
-            /* @var RouteAttribute $routeAttribute */
+            /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
             $filter[$routeAttribute->getName()] = $routeAttribute->getType();
         }

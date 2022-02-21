@@ -1,7 +1,7 @@
 <?php
 
 use Pecee\Http\Input\Attributes\Route;
-use Pecee\Http\Input\Attributes\RouteAttribute;
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
 
 class DummyController
 {
@@ -28,8 +28,8 @@ class DummyController
 
     #[
         Route(Route::POST, '/my/test/url'),
-        RouteAttribute('fullname', 'string', 'min:5|max:20'),
-        RouteAttribute('company', 'string')
+        ValidatorAttribute('fullname', 'string', 'min:5|max:20'),
+        ValidatorAttribute('company', 'string')
     ]
     public function method4()
     {
