@@ -350,6 +350,48 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
         TestRouter::debug('/my/test/url', 'get');
     }
 
+    public function testInputValidatorData()
+    {
+        $data = [
+            'fullname' => 'Max Mustermann',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $valid = InputValidator::make()->parseSettings([
+            'fullname' => 'string|max:14|starts_with:Max|ends_with:mann',
+            'isAdmin' => 'boolean',
+            'email' => 'email',
+            'ip' => 'ip',
+            'nullable' => 'nullable'
+        ])->validateData($data);
+
+        $this->assertTrue($valid);
+    }
+
+    public function testInputValidatorDataFailed()
+    {
+        $data = [
+            'fullname' => 'Max',
+            'isAdmin' => 'false',
+            'email' => 'user@provider.com',
+            'ip' => '192.168.105.22',
+        ];
+
+        $this->expectException(InputValidationException::class);
+
+        $valid = InputValidator::make()->parseSettings([
+            'fullname' => 'string|min:4|max:14|starts_with:Max|ends_with:mann',
+            'isAdmin' => 'boolean',
+            'email' => 'email',
+            'ip' => 'ip',
+            'nullable' => 'nullable'
+        ])->validateData($data);
+
+        $this->assertFalse($valid);
+    }
+
     public function testAttributeValidatorRules(){
         InputValidator::$parseAttributes = true;
         TestRouter::resetRouter();

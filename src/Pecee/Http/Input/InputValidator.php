@@ -181,7 +181,31 @@ class InputValidator
                 throw new InputValidationException('Failed to validate inputs', $this->getErrors());
             }
         }
-        return $this->valid;
+        return $this->passes();
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     * @throws InputValidationException
+     * @throws InputsNotValidatedException
+     */
+    public function validateData(array $data): bool
+    {
+        $this->errors = array();
+        foreach ($this->getItems() as $item) {
+            $inputItem = new InputItem($item->getKey(), $data[$item->getKey()] ?? null);
+            $callback = $item->validate($inputItem);
+            if (!$callback)
+                $this->errors[] = $item;
+        }
+        $this->valid = empty($this->errors);
+        if ($this->fails()) {
+            if(self::isThrowExceptions()){
+                throw new InputValidationException('Failed to validate inputs', $this->getErrors());
+            }
+        }
+        return $this->passes();
     }
 
     /**
