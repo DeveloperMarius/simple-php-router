@@ -44,4 +44,11 @@ class ValidatorAttribute{
         return $this->validator;
     }
 
+    /**
+     * @return string
+     */
+    public function getFullValidator(): string{
+        return $this->getType() . ($this->getValidator() !== null ? '|' . $this->getValidator() : '');
+    }
+
 }

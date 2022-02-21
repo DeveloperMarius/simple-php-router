@@ -233,11 +233,7 @@ class InputValidator
                     foreach($attributes as $attribute){
                         /* @var ValidatorAttribute $routeAttribute */
                         $routeAttribute = $attribute->newInstance();
-                        $validatorSetting = $routeAttribute->getType();
-                        if($routeAttribute->getValidator() !== null){
-                            $validatorSetting .= '|' . $routeAttribute->getValidator();
-                        }
-                        $settings[$routeAttribute->getName()] = $validatorSetting;
+                        $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
                     }
                     $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
                 }
