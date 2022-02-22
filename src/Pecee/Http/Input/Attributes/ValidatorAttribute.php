@@ -9,7 +9,7 @@ use Attribute;
  *
  * @since 8.0
  */
-#[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_FUNCTION|Attribute::IS_REPEATABLE|Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_FUNCTION|Attribute::TARGET_PROPERTY|Attribute::IS_REPEATABLE)]
 class ValidatorAttribute{
 
     /**
