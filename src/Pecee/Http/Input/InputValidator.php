@@ -162,6 +162,7 @@ class InputValidator
      * Validate all Items
      * @param Request $request
      * @return bool
+     * @throws InputValidationException
      */
     public function validate(Request $request): bool
     {
@@ -188,7 +189,6 @@ class InputValidator
      * @param array $data
      * @return bool
      * @throws InputValidationException
-     * @throws InputsNotValidatedException
      */
     public function validateData(array $data): bool
     {
