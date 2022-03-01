@@ -404,7 +404,7 @@ class InputHandler implements IInputHandler{
         $output = (count($keys) > 0) ? array_intersect_key($output, array_flip($keys)) : $output;
 
         foreach ($filter as $filterKey => $parser) {
-            if(is_numeric($filterKey)){
+            if(is_int($filterKey)){
                 $filterKey = $parser;
                 $parser = null;
             }
