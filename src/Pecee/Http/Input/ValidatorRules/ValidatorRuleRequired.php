@@ -16,6 +16,9 @@ class ValidatorRuleRequired extends InputValidatorRule
         if (is_a($inputItem, InputFile::class)) {
             return $inputItem->getFilename() !== null && trim($inputItem->getFilename()) !== '';
         }
+        if(is_array($inputItem->getValue())){
+            return sizeof($inputItem->getValue()) > 0;
+        }
 
         return $inputItem->getValue() !== null && trim($inputItem->getValue()) !== '';
     }

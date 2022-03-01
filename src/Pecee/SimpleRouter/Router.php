@@ -409,11 +409,14 @@ class Router
 
                     if($route instanceof IRoute){
                         $routeAttributeValidator = InputValidator::parseValidatorFromRoute($this, $route);
-                        if($route->getInputValidator() !== null || $routeAttributeValidator !== null){
+                        $routeParameterValidator = InputValidator::parseValidatorFromRouteParameters($this, $route);
+                        if($route->getInputValidator() !== null || $routeAttributeValidator !== null || $routeParameterValidator !== null){
                             if($route->getInputValidator() !== null)
                                 $this->getRequest()->validate($route->getInputValidator());
                             if($routeAttributeValidator !== null)
                                 $this->getRequest()->validate($routeAttributeValidator);
+                            if($routeParameterValidator !== null)
+                                $routeParameterValidator->validateData($route->getParameters());
 
                             $output = $this->handleRouteRewrite($key, $url);
                             if($output !== null){
