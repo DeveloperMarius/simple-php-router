@@ -448,12 +448,13 @@ class InputHandler implements IInputHandler{
     /**
      * @return array
      */
-    public function requireAttributeValues(): array{
-        $filter = array();
+    public function requireAttributeValues(array $filter): array{
+        $value_filter = array();
         foreach($this->getValidatorAttributes() as $attribute){
-            $filter[$attribute->getName()] = $attribute->getType();
+            if(in_array($attribute->getName(), $filter))
+                $value_filter[$attribute->getName()] = $attribute->getType();
         }
-        return $this->values($filter);
+        return $this->values($value_filter);
     }
 
     /**
