@@ -292,6 +292,35 @@ class InputValidator
 
     /**
      * @param Router $router
+     * @param IRoute $route
+     * @return InputValidator|null
+     * @since 8.0
+     */
+    public static function parseValidatorFromRouteParameters(Router $router, IRoute $route): ?InputValidator{
+        $routeAttributeValidator = null;
+        if(InputValidator::$parseAttributes){
+            $reflectionMethod = self::getReflection($router, $route);
+            if($reflectionMethod !== null){
+                $parameters = $reflectionMethod->getParameters();
+                if(sizeof($parameters) > 0){
+                    $settings = array();
+                    foreach($parameters as $parameter){
+                        $attributes = $parameter->getAttributes(ValidatorAttribute::class);
+                        if(sizeof($attributes) > 0){
+                            /* @var ValidatorAttribute $routeAttribute */
+                            $routeAttribute = $attributes[0]->newInstance();
+                            $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
+                        }
+                    }
+                    $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
+                }
+            }
+        }
+        return $routeAttributeValidator;
+    }
+
+    /**
+     * @param Router $router
      * @param IRoute|null $route
      * @return ReflectionFunction|ReflectionMethod|null
      */
