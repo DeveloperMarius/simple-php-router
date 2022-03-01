@@ -459,8 +459,6 @@ class InputHandler implements IInputHandler{
     /**
      * @param InputValidator|array|null $validator
      * @return InputValidator
-     * @throws InputValidationException
-     * @throws InputsNotValidatedException
      */
     public function validateAttributes(InputValidator|array|null $validator = null): InputValidator{
         if($validator === null){

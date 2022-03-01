@@ -162,7 +162,6 @@ class InputValidator
      * @param InputHandler $inputHandler
      * @return bool
      * @throws InputValidationException
-     * @throws InputsNotValidatedException
      */
     public function validateInputs(InputHandler $inputHandler): bool
     {
@@ -178,7 +177,6 @@ class InputValidator
     /**
      * @param InputHandler $inputHandler
      * @return bool
-     * @throws InputsNotValidatedException
      */
     private function validateItems(InputHandler $inputHandler): bool
     {
@@ -197,7 +195,6 @@ class InputValidator
      * @param Request $request
      * @return bool
      * @throws InputValidationException
-     * @throws InputsNotValidatedException
      */
     public function validate(Request $request): bool
     {
