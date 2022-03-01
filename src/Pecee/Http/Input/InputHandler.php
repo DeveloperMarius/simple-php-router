@@ -4,6 +4,8 @@ namespace Pecee\Http\Input;
 
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Input\Attributes\ValidatorAttribute;
+use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
+use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
 
@@ -418,16 +420,27 @@ class InputHandler implements IInputHandler{
     }
 
     /**
-     * @return IInputItem[]
+     * @return ValidatorAttribute[]
      */
-    public function requireAttributes(): array{
+    private function getValidatorAttributes(): array{
         $reflection = InputValidator::getReflection(SimpleRouter::router());
         $attributes = $reflection->getAttributes(ValidatorAttribute::class);
-        $filter = array();
+        $validator_attributes = array();
         foreach($attributes as $attribute){
             /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
-            $filter[$routeAttribute->getName()] = $routeAttribute->getType();
+            $validator_attributes[] = $routeAttribute;
+        }
+        return $validator_attributes;
+    }
+
+    /**
+     * @return IInputItem[]
+     */
+    public function requireAttributes(): array{
+        $filter = array();
+        foreach($this->getValidatorAttributes() as $attribute){
+            $filter[$attribute->getName()] = $attribute->getType();
         }
         return $this->all($filter);
     }
@@ -436,15 +449,33 @@ class InputHandler implements IInputHandler{
      * @return array
      */
     public function requireAttributeValues(): array{
-        $reflection = InputValidator::getReflection(SimpleRouter::router());
-        $attributes = $reflection->getAttributes(ValidatorAttribute::class);
         $filter = array();
-        foreach($attributes as $attribute){
-            /* @var ValidatorAttribute $routeAttribute */
-            $routeAttribute = $attribute->newInstance();
-            $filter[$routeAttribute->getName()] = $routeAttribute->getType();
+        foreach($this->getValidatorAttributes() as $attribute){
+            $filter[$attribute->getName()] = $attribute->getType();
         }
         return $this->values($filter);
+    }
+
+    /**
+     * @param InputValidator|array|null $validator
+     * @return InputValidator
+     * @throws InputValidationException
+     * @throws InputsNotValidatedException
+     */
+    public function validateAttributes(InputValidator|array|null $validator = null): InputValidator{
+        if($validator === null){
+            $validator = array();
+            foreach($this->getValidatorAttributes() as $attribute){
+                $validator[$attribute->getName()] = $attribute->getFullValidator();
+            }
+        }
+        if(!$validator instanceof InputValidator){
+            $tmp = InputValidator::make();
+            $tmp->parseSettings($validator);
+            $validator = $tmp;
+        }
+        $validator->validateInputs($this);
+        return $validator;
     }
 
     /**

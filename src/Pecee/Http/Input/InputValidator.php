@@ -159,15 +159,30 @@ class InputValidator
     }
 
     /**
-     * Validate all Items
-     * @param Request $request
+     * @param InputHandler $inputHandler
      * @return bool
      * @throws InputValidationException
+     * @throws InputsNotValidatedException
      */
-    public function validate(Request $request): bool
+    public function validateInputs(InputHandler $inputHandler): bool
+    {
+        $this->validateItems($inputHandler);
+        if ($this->fails()) {
+            if(self::isThrowExceptions()){
+                throw new InputValidationException('Failed to validate inputs', $this->getErrors());
+            }
+        }
+        return $this->passes();
+    }
+
+    /**
+     * @param InputHandler $inputHandler
+     * @return bool
+     * @throws InputsNotValidatedException
+     */
+    private function validateItems(InputHandler $inputHandler): bool
     {
         $this->errors = array();
-        $inputHandler = $request->getInputHandler();
         foreach ($this->getItems() as $item) {
             $inputItem = $inputHandler->find($item->getKey());
             $callback = $item->validate($inputItem);
@@ -175,6 +190,18 @@ class InputValidator
                 $this->errors[] = $item;
         }
         $this->valid = empty($this->errors);
+        return $this->passes();
+    }
+
+    /**
+     * @param Request $request
+     * @return bool
+     * @throws InputValidationException
+     * @throws InputsNotValidatedException
+     */
+    public function validate(Request $request): bool
+    {
+        $this->validateItems($request->getInputHandler());
         if ($this->fails()) {
             if ($this->rewriteCallbackOnFailure !== null)
                 $request->setRewriteCallback($this->rewriteCallbackOnFailure);

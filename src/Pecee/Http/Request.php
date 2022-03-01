@@ -566,7 +566,7 @@ class Request
      * @param InputValidator|array $validator
      * @return InputValidator
      */
-    public function validate($validator): InputValidator{
+    public function validate(InputValidator|array $validator): InputValidator{
         if(!$validator instanceof InputValidator){
             $tmp = InputValidator::make();
             $tmp->parseSettings($validator);
