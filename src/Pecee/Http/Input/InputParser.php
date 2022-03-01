@@ -29,10 +29,12 @@ class InputParser{
      * @param callable|string $setting
      * @return self
      */
-    public function parseFromSetting($setting): self{
+    public function parseFromSetting(callable|string $setting): self{
         if(is_callable($setting)){
             $this->setValue($setting($this->getInputItem()));
         }else{
+            if($this->getValue() === null)
+                return $this;
             switch($setting){
                 case 'string':
                     $this->toString();
