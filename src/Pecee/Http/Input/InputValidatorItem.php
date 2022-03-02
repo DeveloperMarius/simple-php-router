@@ -192,7 +192,7 @@ class InputValidatorItem
             return $rule instanceof ValidatorRuleNullable;
         });
         // If the nullable rule is present and the value is null we move on without validation
-        if (empty($nullable) || $inputItem->getValue() !== null) {
+        if (empty($nullable) || ($inputItem->getValue() !== null && (!is_array($inputItem->getValue()) || sizeof($inputItem->getValue()) > 0))) {
             /**
              * Key: rule tag
              * Value: 0 = valid; 1 = error; 2 = thrown
