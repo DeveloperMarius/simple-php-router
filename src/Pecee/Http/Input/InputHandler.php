@@ -12,6 +12,11 @@ use Pecee\SimpleRouter\SimpleRouter;
 class InputHandler implements IInputHandler{
 
     /**
+     * @var bool $handleEmptyStringAsNull
+     */
+    public static bool $handleEmptyStringAsNull = true;
+
+    /**
      * @var InputItem[]
      */
     protected array $get = [];
@@ -100,6 +105,14 @@ class InputHandler implements IInputHandler{
                 case Request::CONTENT_TYPE_JSON:
                     $body = json_decode($this->originalBodyPlain, true);
                     if ($body !== false) {
+                        $this->originalBody = $body;
+                        $this->data = $this->parseInputItem($body);
+                    }
+                    break;
+                case Request::CONTENT_TYPE_X_FORM_ENCODED:
+                    $body = null;
+                    parse_str($this->originalBodyPlain, $body);
+                    if ($body !== null) {
                         $this->originalBody = $body;
                         $this->data = $this->parseInputItem($body);
                     }
@@ -239,6 +252,9 @@ class InputHandler implements IInputHandler{
             if (is_array($value) === true) {
                 $value = $this->parseInputItem($value);
             }
+
+            if($value === '' && self::$handleEmptyStringAsNull)
+                $value = null;
 
             $list[$key] = new InputItem($key, $value);
         }
