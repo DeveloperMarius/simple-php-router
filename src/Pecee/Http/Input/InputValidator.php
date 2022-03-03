@@ -327,6 +327,9 @@ class InputValidator
     public static function getReflection(Router $router, ?IRoute $route = null){
         $reflectionMethod = null;
         if($route === null){
+            $route = SimpleRouter::router()->getCurrentProcessingRoute();
+        }
+        if($route === null){
             $route = SimpleRouter::request()->getLoadedRoute();
         }
         $callback = $route->getCallback();
