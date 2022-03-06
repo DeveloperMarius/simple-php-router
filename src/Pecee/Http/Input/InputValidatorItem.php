@@ -25,8 +25,10 @@ use Pecee\Http\Input\ValidatorRules\ValidatorRuleString;
  * @method InputValidatorItem ip()
  * @method InputValidatorItem matches($regEx)
  * @method InputValidatorItem max($value)
+ * @method InputValidatorItem maxLength($value)
  *
  * @method InputValidatorItem min($value)
+ * @method InputValidatorItem minLength($value)
  * @method InputValidatorItem notNull()
  * @method InputValidatorItem nullable()
  * @method InputValidatorItem numeric()
