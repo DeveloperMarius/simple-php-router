@@ -44,7 +44,7 @@ class InputValidationException extends Exception
     public function getErrorMessages(): array{
         $messages = array();
         foreach($this->getErrors() as $item){
-            $messages[] = $item->getErrorMessages();
+            $messages[$item->getKey()] = $item->getErrorMessages();
         }
         return $messages;
     }
@@ -55,7 +55,7 @@ class InputValidationException extends Exception
     public function getDetailedMessage(): string{
         $messages = array();
         foreach($this->getErrors() as $item){
-            $messages[] = join(', ', $item->getErrorMessages());
+            $messages[] = $item->getKey() . ': ' . join(', ', $item->getErrorMessages());
         }
         return 'Failed to validate inputs: ' . join('; ', $messages);
     }
