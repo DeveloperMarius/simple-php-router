@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleInteger extends InputValidatorRule
 {
 
-    protected $tag = 'integer';
-    protected $requires = array('required');
+    protected ?string $tag = 'integer';
+    protected array $requires = array('required');
 
     public function validate(IInputItem $inputItem): bool
     {

@@ -46,24 +46,24 @@ class InputValidatorItem
      * Syntax: key or parentkey.childkey
      * @var string
      */
-    protected $key;
+    protected string $key;
     /**
      * @var InputValidatorRule[]
      */
-    protected $rules = array();
+    protected array $rules = array();
     /**
      * @var bool|null
      */
-    protected $valid = null;
+    protected ?bool $valid = null;
     /**
      * @var InputValidatorRule[]|null
      */
-    protected $errors = null;
+    protected ?array $errors = null;
 
     /**
      * @var IInputItem|null $inputItem - Set after validation
      */
-    protected $inputItem = null;
+    protected ?IInputItem $inputItem = null;
 
     /**
      * @param string $key
@@ -83,10 +83,10 @@ class InputValidatorItem
     }
 
     /**
-     * @param string|array|InputValidatorRule $settings
+     * @param array|string|InputValidatorRule $settings
      * @return void
      */
-    public function parseSettings($settings)
+    public function parseSettings(array|string|InputValidatorRule $settings)
     {
         if(is_string($settings)){
             $matches = array();
@@ -153,12 +153,17 @@ class InputValidatorItem
         return $this;
     }
 
-    private function parseRuleByTag(string $rule, array $attributes = array())
+    /**
+     * @param string $rule
+     * @param array $attributes
+     * @return InputValidatorRule|null
+     */
+    private function parseRuleByTag(string $rule, array $attributes = array()): ?InputValidatorRule
     {
         $class = null;
         $rule = str_replace('_', '', ucwords($rule, '_'));
 
-        if (strpos($rule, '\\') !== false && class_exists($rule)) {
+        if (str_contains($rule, '\\') && class_exists($rule)) {
             $class = $rule;
         } else if (class_exists('Pecee\Http\Input\ValidatorRules\ValidatorRule' . ucfirst(strtolower($rule)))) {
             $class = 'Pecee\Http\Input\ValidatorRules\ValidatorRule' . ucfirst(strtolower($rule));
@@ -251,6 +256,7 @@ class InputValidatorItem
 
     /**
      * @return IInputItem
+     * @throws InputsNotValidatedException
      */
     private function getInputItem(): IInputItem
     {
@@ -262,6 +268,7 @@ class InputValidatorItem
     /**
      * Check if inputs passed validation
      * @return bool
+     * @throws InputsNotValidatedException
      */
     public function passes(): bool
     {
@@ -273,6 +280,7 @@ class InputValidatorItem
     /**
      * Check if inputs failed valida
      * @return bool
+     * @throws InputsNotValidatedException
      */
     public function fails(): bool
     {
@@ -283,6 +291,7 @@ class InputValidatorItem
 
     /**
      * @return InputValidatorRule[]|null
+     * @throws InputsNotValidatedException
      */
     public function getErrors(): ?array
     {
@@ -293,6 +302,7 @@ class InputValidatorItem
 
     /**
      * @return array
+     * @throws InputsNotValidatedException
      */
     public function getErrorMessages(): array
     {

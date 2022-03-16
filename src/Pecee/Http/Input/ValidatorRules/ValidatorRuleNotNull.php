@@ -8,7 +8,7 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleNotNull extends InputValidatorRule
 {
 
-    protected $tag = 'not_null';
+    protected ?string $tag = 'not_null';
     //Redundant, because default is null if not exists
     //protected $requires = array('required');
 

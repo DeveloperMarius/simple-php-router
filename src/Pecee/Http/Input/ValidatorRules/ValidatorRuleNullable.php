@@ -8,7 +8,7 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleNullable extends InputValidatorRule
 {
 
-    protected $tag = 'nullable';
+    protected ?string $tag = 'nullable';
 
     public function validate(IInputItem $inputItem): bool
     {

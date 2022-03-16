@@ -13,8 +13,14 @@ class InputValidationException extends Exception
     /**
      * @var InputValidatorItem[] $errors
      */
-    private $errors;
+    private array $errors;
 
+    /**
+     * @param $message
+     * @param $errors
+     * @param $code
+     * @param Throwable|null $previous
+     */
     public function __construct($message, $errors = array(), $code = 0, Throwable $previous = null) {
         $this->errors = $errors;
         parent::__construct($message, $code, $previous);
@@ -29,6 +35,7 @@ class InputValidationException extends Exception
 
     /**
      * @return InputValidatorRule[]|null
+     * @throws InputsNotValidatedException
      */
     public function getErrorsForItem(string $key): ?array{
         foreach($this->getErrors() as $item){
@@ -40,6 +47,7 @@ class InputValidationException extends Exception
 
     /**
      * @return array[]
+     * @throws InputsNotValidatedException
      */
     public function getErrorMessages(): array{
         $messages = array();
@@ -51,6 +59,7 @@ class InputValidationException extends Exception
 
     /**
      * @return string
+     * @throws InputsNotValidatedException
      */
     public function getDetailedMessage(): string{
         $messages = array();

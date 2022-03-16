@@ -28,7 +28,7 @@ class InputValidator
      * Allow throwing exceptions
      * @var bool
      */
-    private static $throwExceptions = true;
+    private static bool $throwExceptions = true;
 
     /**
      * @param bool $throwExceptions
@@ -49,7 +49,7 @@ class InputValidator
     /**
      * @var string|null $customValidatorRuleNamespace
      */
-    private static $customValidatorRuleNamespace = null;
+    private static ?string $customValidatorRuleNamespace = null;
 
     /**
      * @param string $customValidatorRuleNamespace
@@ -72,19 +72,19 @@ class InputValidator
     /**
      * @var string|Closure|null
      */
-    protected $rewriteCallbackOnFailure = null;
+    protected string|Closure|null $rewriteCallbackOnFailure = null;
     /**
      * @var InputValidatorItem[]
      */
-    protected $items = array();
+    protected array $items = array();
     /**
      * @var bool|null
      */
-    protected $valid = null;
+    protected ?bool $valid = null;
     /**
      * @var InputValidatorItem[]|null
      */
-    protected $errors = null;
+    protected ?array $errors = null;
 
     /**
      * Creates a new InputValidator
@@ -123,7 +123,7 @@ class InputValidator
      * @param string|Closure $callback
      * @return self
      */
-    protected function rewriteCallbackOnFailure(string $callback): self
+    protected function rewriteCallbackOnFailure(Closure|string $callback): self
     {
         $this->rewriteCallbackOnFailure = $callback;
         return $this;
@@ -161,13 +161,13 @@ class InputValidator
     /**
      * @param InputHandler $inputHandler
      * @return bool
-     * @throws InputValidationException
+     * @throws InputValidationException|InputsNotValidatedException
      */
     public function validateInputs(InputHandler $inputHandler): bool
     {
         $this->validateItems($inputHandler);
         if ($this->fails()) {
-            if(self::isThrowExceptions()){
+            if (self::isThrowExceptions()) {
                 throw new InputValidationException('Failed to validate inputs', $this->getErrors());
             }
         }
@@ -177,6 +177,7 @@ class InputValidator
     /**
      * @param InputHandler $inputHandler
      * @return bool
+     * @throws InputsNotValidatedException
      */
     private function validateItems(InputHandler $inputHandler): bool
     {
@@ -195,6 +196,7 @@ class InputValidator
      * @param Request $request
      * @return bool
      * @throws InputValidationException
+     * @throws InputsNotValidatedException
      */
     public function validate(Request $request): bool
     {
@@ -202,7 +204,7 @@ class InputValidator
         if ($this->fails()) {
             if ($this->rewriteCallbackOnFailure !== null)
                 $request->setRewriteCallback($this->rewriteCallbackOnFailure);
-            if(self::isThrowExceptions()){
+            if (self::isThrowExceptions()) {
                 throw new InputValidationException('Failed to validate inputs', $this->getErrors());
             }
         }
@@ -213,6 +215,7 @@ class InputValidator
      * @param array $data
      * @return bool
      * @throws InputValidationException
+     * @throws InputsNotValidatedException
      */
     public function validateData(array $data): bool
     {
@@ -225,7 +228,7 @@ class InputValidator
         }
         $this->valid = empty($this->errors);
         if ($this->fails()) {
-            if(self::isThrowExceptions()){
+            if (self::isThrowExceptions()) {
                 throw new InputValidationException('Failed to validate inputs', $this->getErrors());
             }
         }
@@ -235,6 +238,7 @@ class InputValidator
     /**
      * Check if inputs passed validation
      * @return bool
+     * @throws InputsNotValidatedException
      */
     public function passes(): bool
     {
@@ -246,6 +250,7 @@ class InputValidator
     /**
      * Check if inputs failed valida
      * @return bool
+     * @throws InputsNotValidatedException
      */
     public function fails(): bool
     {
@@ -256,6 +261,7 @@ class InputValidator
 
     /**
      * @return InputValidatorItem[]|null
+     * @throws InputsNotValidatedException
      */
     public function getErrors(): ?array
     {
@@ -270,15 +276,16 @@ class InputValidator
      * @return InputValidator|null
      * @since 8.0
      */
-    public static function parseValidatorFromRoute(Router $router, IRoute $route): ?InputValidator{
+    public static function parseValidatorFromRoute(Router $router, IRoute $route): ?InputValidator
+    {
         $routeAttributeValidator = null;
-        if(InputValidator::$parseAttributes){
+        if (InputValidator::$parseAttributes) {
             $reflectionMethod = self::getReflection($router, $route);
-            if($reflectionMethod !== null){
+            if ($reflectionMethod !== null) {
                 $attributes = $reflectionMethod->getAttributes(ValidatorAttribute::class);
-                if(sizeof($attributes) > 0){
+                if (sizeof($attributes) > 0) {
                     $settings = array();
-                    foreach($attributes as $attribute){
+                    foreach ($attributes as $attribute) {
                         /* @var ValidatorAttribute $routeAttribute */
                         $routeAttribute = $attribute->newInstance();
                         $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
@@ -296,17 +303,18 @@ class InputValidator
      * @return InputValidator|null
      * @since 8.0
      */
-    public static function parseValidatorFromRouteParameters(Router $router, IRoute $route): ?InputValidator{
+    public static function parseValidatorFromRouteParameters(Router $router, IRoute $route): ?InputValidator
+    {
         $routeAttributeValidator = null;
-        if(InputValidator::$parseAttributes){
+        if (InputValidator::$parseAttributes) {
             $reflectionMethod = self::getReflection($router, $route);
-            if($reflectionMethod !== null){
+            if ($reflectionMethod !== null) {
                 $parameters = $reflectionMethod->getParameters();
-                if(sizeof($parameters) > 0){
+                if (sizeof($parameters) > 0) {
                     $settings = array();
-                    foreach($parameters as $parameter){
+                    foreach ($parameters as $parameter) {
                         $attributes = $parameter->getAttributes(ValidatorAttribute::class);
-                        if(sizeof($attributes) > 0){
+                        if (sizeof($attributes) > 0) {
                             /* @var ValidatorAttribute $routeAttribute */
                             $routeAttribute = $attributes[0]->newInstance();
                             $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
@@ -324,20 +332,21 @@ class InputValidator
      * @param IRoute|null $route
      * @return ReflectionFunction|ReflectionMethod|null
      */
-    public static function getReflection(Router $router, ?IRoute $route = null){
+    public static function getReflection(Router $router, ?IRoute $route = null): ReflectionMethod|ReflectionFunction|null
+    {
         $reflectionMethod = null;
-        if($route === null){
+        if ($route === null) {
             $route = SimpleRouter::router()->getCurrentProcessingRoute();
         }
-        if($route === null){
+        if ($route === null) {
             $route = SimpleRouter::request()->getLoadedRoute();
         }
         $callback = $route->getCallback();
-        try{
-            if($callback !== null){
-                if(is_callable($callback) === true){
+        try {
+            if ($callback !== null) {
+                if (is_callable($callback) === true) {
                     /* Load class from type hinting */
-                    if(is_array($callback) === true && isset($callback[0], $callback[1]) === true){
+                    if (is_array($callback) === true && isset($callback[0], $callback[1]) === true) {
                         $callback[0] = $router->getClassLoader()->loadClass($callback[0]);
                     }
 
@@ -352,16 +361,17 @@ class InputValidator
                     $className = ($namespace !== null && $controller[0] !== '\\') ? $namespace . '\\' . $controller : $controller;
                     $class = $router->getClassLoader()->loadClass($className);
 
-                    if($method === null){
+                    if ($method === null) {
                         $method = '__invoke';
                     }
 
-                    if(method_exists($class, $method) !== false){
+                    if (method_exists($class, $method) !== false) {
                         $reflectionMethod = new ReflectionMethod($class, $method);
                     }
                 }
             }
-        }catch(ReflectionException $e){}
+        } catch (ReflectionException $e) {
+        }
         return $reflectionMethod;
     }
 }

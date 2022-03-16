@@ -9,8 +9,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleFile extends InputValidatorRule
 {
 
-    protected $tag = 'file';
-    protected $requires = array('required');
+    protected ?string $tag = 'file';
+    protected array $requires = array('required');
 
     public function validate(IInputItem $inputItem): bool
     {

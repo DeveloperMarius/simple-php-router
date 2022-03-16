@@ -4,6 +4,7 @@ namespace Pecee\Http\Input;
 
 use ArrayIterator;
 use IteratorAggregate;
+use JetBrains\PhpStorm\ArrayShape;
 use Pecee\Exceptions\InvalidArgumentException;
 
 class InputFile implements IInputItem, IteratorAggregate
@@ -65,8 +66,8 @@ class InputFile implements IInputItem, IteratorAggregate
      * Create from array
      *
      * @param array $values
-     * @throws InvalidArgumentException
      * @return static
+     * @throws InvalidArgumentException
      */
     public static function createFromArray(array $values): self
     {
@@ -78,10 +79,10 @@ class InputFile implements IInputItem, IteratorAggregate
 
         $values += [
             'tmp_name' => null,
-            'type'     => null,
-            'size'     => null,
-            'name'     => null,
-            'error'    => null,
+            'type' => null,
+            'size' => null,
+            'name' => null,
+            'error' => null,
         ];
 
         return (new static($values['index']))
@@ -169,7 +170,7 @@ class InputFile implements IInputItem, IteratorAggregate
      */
     public function getExtension(): ?string
     {
-        if($this->getFilename() === null)
+        if ($this->getFilename() === null)
             return null;
         return pathinfo($this->getFilename(), PATHINFO_EXTENSION);
     }
@@ -177,7 +178,7 @@ class InputFile implements IInputItem, IteratorAggregate
     /**
      * Get human friendly name
      *
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -312,7 +313,7 @@ class InputFile implements IInputItem, IteratorAggregate
      * @param mixed $value
      * @return static
      */
-    public function setValue($value): IInputItem
+    public function setValue(mixed $value): IInputItem
     {
         $this->filename = $value;
 
@@ -332,42 +333,48 @@ class InputFile implements IInputItem, IteratorAggregate
      */
     public function getInputItems(): array
     {
-        if(is_array($this->value)){
+        if (is_array($this->value)) {
             return $this->value;
         }
         return array();
     }
 
     /**
-     * @param InputFile|array $inputFile
+     * @param array|InputFile $inputFile
      * @return static
      */
-    public function addInputFile($inputFile): IInputItem
+    public function addInputFile(InputFile|array $inputFile): IInputItem
     {
-        if(!is_array($this->value)){
+        if (!is_array($this->value)) {
             $this->value = array();
         }
-        if(is_array($inputFile)){
+        if (is_array($inputFile)) {
             $this->value = array_merge($this->value, $inputFile);
-        }else{
+        } else {
             $this->value[] = $inputFile;
         }
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return [
             'tmp_name' => $this->tmpName,
-            'type'     => $this->type,
-            'size'     => $this->size,
-            'name'     => $this->name,
-            'error'    => $this->errors,
+            'type' => $this->type,
+            'size' => $this->size,
+            'name' => $this->name,
+            'error' => $this->errors,
             'filename' => $this->filename,
         ];
     }
 
+    /**
+     * @return ArrayIterator
+     */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->getInputItems());

@@ -9,7 +9,7 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleRequired extends InputValidatorRule
 {
 
-    protected $tag = 'required';
+    protected ?string $tag = 'required';
 
     public function validate(IInputItem $inputItem): bool
     {

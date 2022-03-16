@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleStartsWith extends InputValidatorRule
 {
 
-    protected $tag = 'starts_with';
-    protected $requires = array('string', 'numeric', 'array');
+    protected ?string $tag = 'starts_with';
+    protected array $requires = array('string', 'numeric', 'array');
 
     /**
      * @param array $value
@@ -23,25 +23,25 @@ class ValidatorRuleStartsWith extends InputValidatorRule
 
     public function validate(IInputItem $inputItem): bool
     {
-        if(is_string($inputItem->getValue()) || is_numeric($inputItem->getValue())){
+        if (is_string($inputItem->getValue()) || is_numeric($inputItem->getValue())) {
             $value = strval($inputItem->getValue());
-            foreach($this->getAttributes() as $attribute){
-                if(strncmp($value, $attribute, strlen($attribute)) === 0)
+            foreach ($this->getAttributes() as $attribute) {
+                if (str_starts_with($attribute, $value))
                     return true;
             }
             return false;
         }
 
-        if(is_array($inputItem->getValue())){
-            if($this->isAssociativeArray($inputItem->getValue())){
-                //Support for PHP 7.1, array_key_first since PHP 7.3
-                $key = array_keys($inputItem->getValue())[0];
+        if (is_array($inputItem->getValue())) {
+            if ($this->isAssociativeArray($inputItem->getValue())) {
+                //Support for PHP 7.1, array_key_first since PHP 7.3 (Removed since this version aims at PHP 8)
+                $key = array_key_first($inputItem->getValue());
                 $first_value = $inputItem->getValue()[$key];
-            }else{
+            } else {
                 $first_value = $inputItem->getValue()[0];
             }
-            foreach($this->getAttributes() as $attribute){
-                if($first_value === $attribute)
+            foreach ($this->getAttributes() as $attribute) {
+                if ($first_value === $attribute)
                     return true;
             }
             return false;

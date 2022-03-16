@@ -6,7 +6,8 @@ namespace Pecee\Http\Input;
 use ArrayIterator;
 use IteratorAggregate;
 
-class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
+class InputItem implements /*ArrayAccess,*/
+    IInputItem, IteratorAggregate
 {
 
     /**
@@ -20,13 +21,13 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     /**
      * @var mixed|null $value
      */
-    public $value;
+    public mixed $value;
 
     /**
      * @param string $index
      * @param mixed|null $value
      */
-    public function __construct(string $index, $value = null)
+    public function __construct(string $index, mixed $value = null)
     {
         $this->index = $index;
         $this->value = $value;
@@ -55,7 +56,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -77,9 +78,9 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
-        if(is_array($this->value)){
+        if (is_array($this->value)) {
             return $this->parseValueFromArray($this->value);
         }
         return $this->value;
@@ -98,7 +99,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      */
     public function getInputItems(): array
     {
-        if(is_array($this->value)){
+        if (is_array($this->value)) {
             return $this->value;
         }
         return array();
@@ -129,7 +130,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      * @param mixed $value
      * @return static
      */
-    public function setValue($value): IInputItem
+    public function setValue(mixed $value): IInputItem
     {
         $this->value = $value;
 
@@ -139,7 +140,8 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     /**
      * @return InputParser
      */
-    public function parser(): InputParser{
+    public function parser(): InputParser
+    {
         return new InputParser($this);
     }
 

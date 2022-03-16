@@ -2,54 +2,60 @@
 
 namespace Pecee\Http\Input;
 
-abstract class InputValidatorRule implements IInputValidatorRule{
+abstract class InputValidatorRule implements IInputValidatorRule
+{
 
     /**
-     * @var string $tag
+     * @var string|null $tag
      */
-    protected $tag = null;
+    protected ?string $tag = null;
     /**
      * @var array $attributes
      */
-    protected $attributes;
+    protected array $attributes;
     /**
      * @var array $requires
      */
-    protected $requires = array();
+    protected array $requires = array();
 
     /**
      * @param ...$attributes
      * @return InputValidatorRule
      */
-    public static function make(...$attributes): InputValidatorRule{
+    public static function make(...$attributes): InputValidatorRule
+    {
         return new static(...$attributes);
     }
 
     /**
-     *
+     * @param ...$attributes
      */
-    public function __construct(...$attributes){
+    public function __construct(...$attributes)
+    {
         $this->attributes = $attributes;
     }
 
     /**
      * @return string
      */
-    public function getTag(): string{
+    public function getTag(): string
+    {
         return $this->tag;
     }
 
     /**
      * @return array
      */
-    public function getAttributes(): array{
+    public function getAttributes(): array
+    {
         return $this->attributes;
     }
 
     /**
      * @return array
      */
-    public function getRequiredRules(): array{
+    public function getRequiredRules(): array
+    {
         return $this->requires;
     }
 
@@ -57,7 +63,8 @@ abstract class InputValidatorRule implements IInputValidatorRule{
      * @param IInputItem $inputItem
      * @return bool
      */
-    public function validate(IInputItem $inputItem): bool{
+    public function validate(IInputItem $inputItem): bool
+    {
         return true;
     }
 
@@ -72,7 +79,8 @@ abstract class InputValidatorRule implements IInputValidatorRule{
      *
      * @return string
      */
-    public function getErrorMessage(): string{
+    public function getErrorMessage(): string
+    {
         return 'Error validating Input %s';
     }
 
@@ -80,7 +88,8 @@ abstract class InputValidatorRule implements IInputValidatorRule{
      * @param string $key
      * @return string
      */
-    public function formatErrorMessage(string $key): string{
+    public function formatErrorMessage(string $key): string
+    {
         return sprintf($this->getErrorMessage(), $key, ...$this->getAttributes());
     }
 

@@ -2,7 +2,8 @@
 
 namespace Pecee\Http\Input;
 
-class InputParser{
+class InputParser
+{
 
     /**
      * @var InputItem $inputItem
@@ -20,7 +21,7 @@ class InputParser{
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->getInputItem()->getValue();
     }
@@ -29,13 +30,14 @@ class InputParser{
      * @param callable|string $setting
      * @return self
      */
-    public function parseFromSetting(callable|string $setting): self{
-        if(is_callable($setting)){
+    public function parseFromSetting(callable|string $setting): self
+    {
+        if (is_callable($setting)) {
             $this->setValue($setting($this->getInputItem()));
-        }else{
-            if($this->getValue() === null)
+        } else {
+            if ($this->getValue() === null)
                 return $this;
-            switch($setting){
+            switch ($setting) {
                 case 'string':
                     $this->toString();
                     break;
@@ -71,7 +73,7 @@ class InputParser{
      * @param mixed $value
      * @return self
      */
-    private function setValue($value): self
+    private function setValue(mixed $value): self
     {
         $this->getInputItem()->setValue($value);
         return $this;
@@ -138,7 +140,7 @@ class InputParser{
      */
     public function toIp(?string $type = null): ?string
     {
-        switch($type){
+        switch ($type) {
             case 'ipv4':
                 $this->setValue(filter_var($this->getValue(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_NULL_ON_FAILURE));
                 break;
@@ -280,7 +282,7 @@ class InputParser{
     {
         $value = lcfirst($this->getValue());
 
-        $this->setValue(preg_replace_callback('/[A-Z]/', function($value){
+        $this->setValue(preg_replace_callback('/[A-Z]/', function ($value) {
             return '_' . strtolower($value[0]);
         }, $value));
 

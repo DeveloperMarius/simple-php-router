@@ -8,13 +8,16 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleMimeTypes extends InputValidatorRule
 {
 
-    protected $tag = 'mime_types';
-    protected $requires = array('file');
+    protected ?string $tag = 'mime_types';
+    protected array $requires = array('file');
 
     public function validate(IInputItem $inputItem): bool
     {
         if (sizeof($this->getAttributes()) > 0) {
-            return $this->getAttributes()[0] === $inputItem->getMime();
+            foreach ($this->getAttributes() as $attribute) {
+                if ($attribute === $inputItem->getMime())
+                    return true;
+            }
         }
         return false;
     }

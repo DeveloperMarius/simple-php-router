@@ -29,19 +29,21 @@ class Route
     public function __construct(
         #[ExpectedValues([Route::GET, Route::POST, Route::PUT, Route::PATCH, Route::DELETE, Route::OPTIONS])] private string $method,
         private string $route
-    ) {}
+    ){}
 
     /**
      * @return string
      */
-    public function getMethod(): string{
+    public function getMethod(): string
+    {
         return $this->method;
     }
 
     /**
      * @return string
      */
-    public function getRoute(): string{
+    public function getRoute(): string
+    {
         return $this->route;
     }
 }

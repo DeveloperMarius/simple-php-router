@@ -8,7 +8,7 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleCustom extends InputValidatorRule
 {
 
-    protected $tag = 'custom';
+    protected ?string $tag = 'custom';
 
     public function validate(IInputItem $inputItem): bool
     {

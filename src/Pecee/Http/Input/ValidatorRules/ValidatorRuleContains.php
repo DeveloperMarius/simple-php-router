@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleContains extends InputValidatorRule
 {
 
-    protected $tag = 'contains';
-    protected $requires = array('string', 'array');
+    protected ?string $tag = 'contains';
+    protected array $requires = array('string', 'array');
 
     /**
      * @param array $value
@@ -23,22 +23,24 @@ class ValidatorRuleContains extends InputValidatorRule
 
     public function validate(IInputItem $inputItem): bool
     {
-        if(is_string($inputItem->getValue())){
-            foreach($this->getAttributes() as $attribute){
-                if(strpos($inputItem->getValue(), $attribute) !== false)
+        if (is_string($inputItem->getValue())) {
+            foreach ($this->getAttributes() as $attribute) {
+                if (str_contains($inputItem->getValue(), $attribute))
                     return true;
             }
             return false;
         }
-        if(is_array($inputItem->getValue())){
-            if($this->isAssociativeArray($inputItem->getValue())){
-                foreach($this->getAttributes() as $attribute){
-                    if(array_search($attribute, $inputItem->getValue()) !== false)
+        if (is_array($inputItem->getValue())) {
+            if ($this->isAssociativeArray($inputItem->getValue())) {
+                foreach ($this->getAttributes() as $attribute) {
+                    // Changed array_search to array_key_exists, since the former was doing the same thing that in_array.
+                    // See https://www.php.net/manual/en/function.array-search.php
+                    if (array_key_exists($attribute, $inputItem->getValue()) !== false)
                         return true;
                 }
-            }else{
-                foreach($this->getAttributes() as $attribute){
-                    if(in_array($attribute, $inputItem->getValue()))
+            } else {
+                foreach ($this->getAttributes() as $attribute) {
+                    if (in_array($attribute, $inputItem->getValue()))
                         return true;
                 }
             }

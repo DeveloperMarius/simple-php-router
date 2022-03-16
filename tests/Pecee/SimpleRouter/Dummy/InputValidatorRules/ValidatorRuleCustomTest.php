@@ -7,7 +7,7 @@ use Pecee\Http\Input\InputValidatorRule;
 
 class ValidatorRuleCustomTest extends InputValidatorRule{
 
-    protected $tag = 'customTest';
+    protected ?string $tag = 'customTest';
 
     /**
      * @param IInputItem $inputItem

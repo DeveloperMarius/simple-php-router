@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleEmail extends InputValidatorRule
 {
 
-    protected $tag = 'email';
-    protected $requires = array('string');
+    protected ?string $tag = 'email';
+    protected array $requires = array('string');
 
     public function validate(IInputItem $inputItem): bool
     {

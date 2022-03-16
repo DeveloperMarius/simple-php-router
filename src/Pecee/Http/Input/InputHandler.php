@@ -9,7 +9,8 @@ use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
 
-class InputHandler implements IInputHandler{
+class InputHandler implements IInputHandler
+{
 
     /**
      * @var bool $handleEmptyStringAsNull
@@ -101,7 +102,7 @@ class InputHandler implements IInputHandler{
 
         /* Parse body */
         if (in_array($this->request->getMethod(), Request::$requestTypesPost, false)) {
-            switch($this->request->getContentType()){
+            switch ($this->request->getContentType()) {
                 case Request::CONTENT_TYPE_JSON:
                     $body = json_decode($this->originalBodyPlain, true);
                     if ($body !== false) {
@@ -146,7 +147,7 @@ class InputHandler implements IInputHandler{
         foreach ($files as $key => $value) {
 
             // Parse multi dept file array
-            if(isset($value['name']) === false && is_array($value)) {
+            if (isset($value['name']) === false && is_array($value)) {
                 $list[$key] = (new InputFile($key))->addInputFile($this->parseFiles($value, $key));
                 continue;
             }
@@ -200,12 +201,12 @@ class InputHandler implements IInputHandler{
                 try {
 
                     $file = InputFile::createFromArray([
-                        'index'    => (empty($key) === true && empty($originalIndex) === false) ? $originalIndex : $key,
-                        'name'     => $original['name'][$key],
-                        'error'    => $original['error'][$key],
+                        'index' => (empty($key) === true && empty($originalIndex) === false) ? $originalIndex : $key,
+                        'name' => $original['name'][$key],
+                        'error' => $original['error'][$key],
                         'tmp_name' => $original['tmp_name'][$key],
-                        'type'     => $original['type'][$key],
-                        'size'     => $original['size'][$key],
+                        'type' => $original['type'][$key],
+                        'size' => $original['size'][$key],
                     ]);
 
                     if (isset($output[$key]) === true) {
@@ -253,7 +254,7 @@ class InputHandler implements IInputHandler{
                 $value = $this->parseInputItem($value);
             }
 
-            if($value === '' && self::$handleEmptyStringAsNull)
+            if ($value === '' && self::$handleEmptyStringAsNull)
                 $value = null;
 
             $list[$key] = new InputItem($key, $value);
@@ -269,11 +270,11 @@ class InputHandler implements IInputHandler{
      * @param string|array ...$methods - Strings or one array of methods
      * @return InputItem|InputFile
      */
-    public function find(string $index, ...$methods)
+    public function find(string $index, ...$methods): InputFile|InputItem
     {
         $element = new InputItem($index, null);
 
-        if(count($methods) == 1) {
+        if (count($methods) == 1) {
             $methods = is_array($methods[0]) ? array_values($methods[0]) : $methods;
         }
 
@@ -287,7 +288,7 @@ class InputHandler implements IInputHandler{
 
         if (($element->getValue() === null && count($methods) === 0) || (count($methods) !== 0 && in_array('file', $methods, true) === true)) {
             $element = $this->file($index);
-            if($element->getValue() === null){
+            if ($element->getValue() === null) {
                 $element = new InputItem($index, null);
             }
         }
@@ -299,11 +300,11 @@ class InputHandler implements IInputHandler{
      * Get input element value matching index
      *
      * @param string $index
-     * @param string|mixed|null $defaultValue
+     * @param mixed|null $defaultValue
      * @param string|array ...$methods
      * @return mixed
      */
-    public function value(string $index, $defaultValue = null, ...$methods)
+    public function value(string $index, mixed $defaultValue = null, ...$methods): mixed
     {
         $input = $this->find($index, ...$methods);
 
@@ -330,7 +331,7 @@ class InputHandler implements IInputHandler{
         $inputs = $this->all($filter);
 
         $values = array();
-        foreach($inputs as $key => $input){
+        foreach ($inputs as $key => $input) {
             if ($input instanceof IInputItem) {
                 $values[$key] = $input->getValue();
             }
@@ -355,11 +356,11 @@ class InputHandler implements IInputHandler{
      * Find post-value by index or return default value.
      *
      * @param string $index
-     * @param mixed $defaultValue
+     * @param mixed|null $defaultValue
      * @return InputItem
      * @deprecated Use $item->data() instead
      */
-    public function post(string $index, $defaultValue = null): InputItem
+    public function post(string $index, mixed $defaultValue = null): InputItem
     {
         return $this->data($index, $defaultValue);
     }
@@ -368,12 +369,12 @@ class InputHandler implements IInputHandler{
      * Find body-value by index or return default value.
      *
      * @param string $index
-     * @param mixed $defaultValue
+     * @param mixed|null $defaultValue
      * @return InputItem
      */
-    public function data(string $index, $defaultValue = null): InputItem
+    public function data(string $index, mixed $defaultValue = null): InputItem
     {
-        if(!isset($this->data[$index]))
+        if (!isset($this->data[$index]))
             return new InputItem($index, $defaultValue);
         return $this->data[$index];
     }
@@ -382,12 +383,12 @@ class InputHandler implements IInputHandler{
      * Find file by index or return default value.
      *
      * @param string $index
-     * @param mixed $defaultValue
+     * @param mixed|null $defaultValue
      * @return InputFile
      */
-    public function file(string $index, $defaultValue = null): InputFile
+    public function file(string $index, mixed $defaultValue = null): InputFile
     {
-        if(!isset($this->file[$index]))
+        if (!isset($this->file[$index]))
             return (new InputFile($index))->setValue($defaultValue);
         return $this->file[$index];
     }
@@ -396,12 +397,12 @@ class InputHandler implements IInputHandler{
      * Find parameter/query-string by index or return default value.
      *
      * @param string $index
-     * @param mixed $defaultValue
+     * @param mixed|null $defaultValue
      * @return InputItem
      */
-    public function get(string $index, $defaultValue = null): InputItem
+    public function get(string $index, mixed $defaultValue = null): InputItem
     {
-        if(!isset($this->get[$index]))
+        if (!isset($this->get[$index]))
             return new InputItem($index, $defaultValue);
         return $this->get[$index];
     }
@@ -420,14 +421,14 @@ class InputHandler implements IInputHandler{
         $output = (count($keys) > 0) ? array_intersect_key($output, array_flip($keys)) : $output;
 
         foreach ($filter as $filterKey => $parser) {
-            if(is_int($filterKey)){
+            if (is_int($filterKey)) {
                 $filterKey = $parser;
                 $parser = null;
             }
             if (array_key_exists($filterKey, $output) === false) {
                 $output[$filterKey] = new InputItem($filterKey);
             }
-            if($parser !== null){
+            if ($parser !== null) {
                 $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
             }
         }
@@ -436,13 +437,28 @@ class InputHandler implements IInputHandler{
     }
 
     /**
+     * Get all get/post/file items, except filtered items
+     * @param array<string>|array<string, callable> $filter Take all items except those in filter
+     * @return array<string, IInputItem>
+     */
+    public function except(array $filter = []): array
+    {
+        $output = $this->all();
+
+        $keys = count($filter) > 0 && !is_numeric(array_key_first($filter)) ? array_keys($filter) : $filter;
+
+        return (count($keys) > 0) ? array_diff_key($output, array_flip($keys)) : $output;
+    }
+
+    /**
      * @return ValidatorAttribute[]
      */
-    private function getValidatorAttributes(): array{
+    private function getValidatorAttributes(): array
+    {
         $reflection = InputValidator::getReflection(SimpleRouter::router());
         $attributes = $reflection->getAttributes(ValidatorAttribute::class);
         $validator_attributes = array();
-        foreach($attributes as $attribute){
+        foreach ($attributes as $attribute) {
             /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
             $validator_attributes[] = $routeAttribute;
@@ -453,9 +469,10 @@ class InputHandler implements IInputHandler{
     /**
      * @return IInputItem[]
      */
-    public function requireAttributes(): array{
+    public function requireAttributes(): array
+    {
         $filter = array();
-        foreach($this->getValidatorAttributes() as $attribute){
+        foreach ($this->getValidatorAttributes() as $attribute) {
             $filter[$attribute->getName()] = $attribute->getType();
         }
         return $this->all($filter);
@@ -465,10 +482,11 @@ class InputHandler implements IInputHandler{
      * @param array|null $filter
      * @return array
      */
-    public function requireAttributeValues(?array $filter = null): array{
+    public function requireAttributeValues(?array $filter = null): array
+    {
         $value_filter = array();
-        foreach($this->getValidatorAttributes() as $attribute){
-            if($filter === null || in_array($attribute->getName(), $filter))
+        foreach ($this->getValidatorAttributes() as $attribute) {
+            if ($filter === null || in_array($attribute->getName(), $filter))
                 $value_filter[$attribute->getName()] = $attribute->getType();
         }
         return $this->values($value_filter);
@@ -478,14 +496,15 @@ class InputHandler implements IInputHandler{
      * @param InputValidator|array|null $validator
      * @return InputValidator
      */
-    public function validateAttributes(InputValidator|array|null $validator = null): InputValidator{
-        if($validator === null){
+    public function validateAttributes(InputValidator|array|null $validator = null): InputValidator
+    {
+        if ($validator === null) {
             $validator = array();
-            foreach($this->getValidatorAttributes() as $attribute){
+            foreach ($this->getValidatorAttributes() as $attribute) {
                 $validator[$attribute->getName()] = $attribute->getFullValidator();
             }
         }
-        if(!$validator instanceof InputValidator){
+        if (!$validator instanceof InputValidator) {
             $tmp = InputValidator::make();
             $tmp->parseSettings($validator);
             $validator = $tmp;

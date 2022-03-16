@@ -2,48 +2,27 @@
 
 namespace Pecee\Http\Input\ValidatorRules;
 
+use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
 use Pecee\Http\Input\IInputItem;
 use Pecee\Http\Input\InputFile;
 use Pecee\Http\Input\InputValidatorRule;
+use Pecee\Http\Input\ValidatorRules\Concerns\ComputesParameterSize;
 
 class ValidatorRuleMinLength extends InputValidatorRule
 {
+    use ComputesParameterSize;
 
-    protected $tag = 'min_length';
-    protected $requires = array('string', 'file', 'array', 'numeric');
-
-    /**
-     * @return float|int
-     */
-    private function getMin()
-    {
-        if (sizeof($this->getAttributes()) > 0) {
-            return intval($this->getAttributes()[0]);
-        }
-        return 0;
-    }
+    protected ?string $tag = 'min_length';
+    protected array $requires = array('string', 'file', 'array', 'numeric');
 
     /**
-     * @param IInputItem $input
-     * @return float|int|null
+     * @param IInputItem $inputItem
+     * @return bool
+     * @throws InputsNotValidatedException
      */
-    private function getNumber(IInputItem $input)
-    {
-        if (is_a($input, InputFile::class))
-            return intval($input->getSize()) / 1024; // Size in Kb
-        $input_value = $input->getValue();
-        if (is_array($input_value))
-            return count($input_value);
-        if (is_numeric($input_value))
-            $input_value = strval($input_value);
-        if(is_string($input_value))
-            return strlen($input_value);
-        return null;
-    }
-
     public function validate(IInputItem $inputItem): bool
     {
-        return $this->getNumber($inputItem) >= $this->getMin();
+        return $this->computeSize($inputItem) >= $this->parseSizeAttribute();
     }
 
     public function getErrorMessage(): string

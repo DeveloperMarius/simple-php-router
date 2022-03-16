@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleEndsWith extends InputValidatorRule
 {
 
-    protected $tag = 'ends_with';
-    protected $requires = array('string', 'numeric', 'array');
+    protected ?string $tag = 'ends_with';
+    protected array $requires = array('string', 'numeric', 'array');
 
     /**
      * @param array $value
@@ -23,24 +23,24 @@ class ValidatorRuleEndsWith extends InputValidatorRule
 
     public function validate(IInputItem $inputItem): bool
     {
-        if(is_string($inputItem->getValue()) || is_numeric($inputItem->getValue())){
+        if (is_string($inputItem->getValue()) || is_numeric($inputItem->getValue())) {
             $value = strval($inputItem->getValue());
-            foreach($this->getAttributes() as $attribute){
-                if(substr($value, -1 * strlen($attribute)) === $attribute)
+            foreach ($this->getAttributes() as $attribute) {
+                if (str_ends_with($value, $attribute))
                     return true;
             }
             return false;
         }
-        if(is_array($inputItem->getValue())){
-            if($this->isAssociativeArray($inputItem->getValue())){
-                //Support for PHP 7.1, array_key_first since PHP 7.3
-                $key = array_keys($inputItem->getValue())[sizeof($inputItem->getValue())-1];
+        if (is_array($inputItem->getValue())) {
+            if ($this->isAssociativeArray($inputItem->getValue())) {
+                //Support for PHP 7.1, array_key_last since PHP 7.3 (Removed since this version aims at PHP 8)
+                $key = array_key_last($inputItem->getValue());
                 $last_value = $inputItem->getValue()[$key];
-            }else{
-                $last_value = $inputItem->getValue()[sizeof($inputItem->getValue())-1];
+            } else {
+                $last_value = $inputItem->getValue()[sizeof($inputItem->getValue()) - 1];
             }
-            foreach($this->getAttributes() as $attribute){
-                if($last_value === $attribute)
+            foreach ($this->getAttributes() as $attribute) {
+                if ($last_value === $attribute)
                     return true;
             }
             return false;

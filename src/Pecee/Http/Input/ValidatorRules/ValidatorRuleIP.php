@@ -8,8 +8,8 @@ use Pecee\Http\Input\InputValidatorRule;
 class ValidatorRuleIP extends InputValidatorRule
 {
 
-    protected $tag = 'ip';
-    protected $requires = array('string');
+    protected ?string $tag = 'ip';
+    protected array $requires = array('string');
 
     public function validate(IInputItem $inputItem): bool
     {
