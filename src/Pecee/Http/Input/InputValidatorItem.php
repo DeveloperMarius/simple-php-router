@@ -84,9 +84,9 @@ class InputValidatorItem
 
     /**
      * @param string|array|InputValidatorRule $settings
-     * @return void
+     * @return self
      */
-    public function parseSettings($settings)
+    public function parseSettings($settings): self
     {
         if(is_string($settings)){
             $matches = array();
@@ -110,6 +110,7 @@ class InputValidatorItem
         }else if($settings instanceof InputValidatorRule){
             $this->addRule($settings);
         }
+        return $this;
     }
 
     /**
