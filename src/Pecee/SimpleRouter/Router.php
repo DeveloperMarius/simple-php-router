@@ -5,8 +5,6 @@ namespace Pecee\SimpleRouter;
 use Exception;
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Exceptions\MalformedUrlException;
-use Pecee\Http\Input\Attributes\ValidatorAttribute;
-use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\Http\Middleware\Exceptions\TokenMismatchException;

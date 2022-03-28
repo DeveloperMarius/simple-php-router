@@ -281,7 +281,8 @@ class InputValidator
                     foreach($attributes as $attribute){
                         /* @var ValidatorAttribute $routeAttribute */
                         $routeAttribute = $attribute->newInstance();
-                        $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
+                        if($routeAttribute->getName() !== null)
+                            $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
                     }
                     $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
                 }
@@ -309,6 +310,13 @@ class InputValidator
                         if(sizeof($attributes) > 0){
                             /* @var ValidatorAttribute $routeAttribute */
                             $routeAttribute = $attributes[0]->newInstance();
+                            if($routeAttribute->getName() === null)
+                                $routeAttribute->setName($parameter->getName());
+                            if($routeAttribute->getType() === null && $parameter->getType() !== null){
+                                $routeAttribute->setType($parameter->getType()->getName());
+                                if($parameter->getType()->allowsNull())
+                                    $routeAttribute->addValidator('nullable');
+                            }
                             $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
                         }
                     }

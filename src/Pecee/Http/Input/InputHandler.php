@@ -4,8 +4,6 @@ namespace Pecee\Http\Input;
 
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Input\Attributes\ValidatorAttribute;
-use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
-use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
 
@@ -445,7 +443,8 @@ class InputHandler implements IInputHandler{
         foreach($attributes as $attribute){
             /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
-            $validator_attributes[] = $routeAttribute;
+            if($routeAttribute->getName() !== null)
+                $validator_attributes[] = $routeAttribute;
         }
         return $validator_attributes;
     }

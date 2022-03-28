@@ -13,28 +13,49 @@ use Attribute;
 class ValidatorAttribute{
 
     /**
-     * @param string $name
-     * @param string $type
+     * @param string|null $name
+     * @param string|null $type
      * @param string|null $validator
      */
     public function __construct(
-        private string $name,
-        private string $type,
+        private ?string $name = null,
+        private ?string $type = null,
         private ?string $validator = null
-    ){}
+    ){
+        if($this->validator === '')
+            $this->validator = null;
+        if(str_starts_with($type, '?')){
+            $this->type = substr($this->type, 1);
+            $this->addValidator('nullable');
+        }
+    }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string{
+    public function getName(): ?string{
         return $this->name;
     }
 
     /**
-     * @return string
+     * @param string|null $name
      */
-    public function getType(): string{
+    public function setName(?string $name): void{
+        $this->name = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string{
         return $this->type;
+    }
+
+    /**
+     * @param string|null $type
+     */
+    public function setType(?string $type): void{
+        $this->type = $type;
     }
 
     /**
@@ -45,10 +66,22 @@ class ValidatorAttribute{
     }
 
     /**
+     * @param string $validator
+     * @return void
+     */
+    public function addValidator(string $validator){
+        if($this->validator !== null){
+            $this->validator .= '|' . $validator;
+        }else{
+            $this->validator = $validator;
+        }
+    }
+
+    /**
      * @return string
      */
     public function getFullValidator(): string{
-        return $this->getType() . ($this->getValidator() !== null ? '|' . $this->getValidator() : '');
+        return $this->getType() !== null ? $this->getType() . ($this->getValidator() !== null ? '|' . $this->getValidator() : '') : ($this->getValidator() ?? '');
     }
 
 }
