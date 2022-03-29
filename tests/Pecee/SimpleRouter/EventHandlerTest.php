@@ -14,6 +14,7 @@ class EventHandlerTest extends \PHPUnit\Framework\TestCase
 
     public function testAllEventTriggered()
     {
+        TestRouter::router()->reset();
         $events = EventHandler::$events;
 
         // Remove the all event
@@ -37,12 +38,6 @@ class EventHandlerTest extends \PHPUnit\Framework\TestCase
 
         TestRouter::get('/', 'DummyController@method1')->name('home');
 
-        // Trigger findRoute
-        TestRouter::router()->findRoute('home');
-
-        // Trigger getUrl
-        TestRouter::router()->getUrl('home');
-
         // Add csrf-verifier
         $csrfVerifier = new \Pecee\Http\Middleware\BaseCsrfVerifier();
         $csrfVerifier->setTokenProvider(new SilentTokenProvider());
@@ -54,7 +49,13 @@ class EventHandlerTest extends \PHPUnit\Framework\TestCase
         ]));
 
         // Start router
-        TestRouter::debug('/non-existing');
+        TestRouter::debug('/non-existing', reset: false);
+
+        // Trigger findRoute
+        TestRouter::router()->findRoute('home');
+
+        // Trigger getUrl
+        TestRouter::router()->getUrl('home');
 
         $this->assertEquals($events, []);
     }

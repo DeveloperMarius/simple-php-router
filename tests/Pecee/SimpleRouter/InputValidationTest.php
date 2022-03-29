@@ -21,7 +21,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'fullname' => 'Max Mustermann',
             'isAdmin' => 'false',
             'email' => 'user@provider.com',
-            'ip' => '192.168.105.22',
+            'ip' => '192.168.105.22'
         ];
 
         $request = new Request(false);
@@ -103,6 +103,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'isAdmin' => 'false',
             'email' => 'user@provider.com',
             'ip' => '192.168.105.22',
+            'type' => 'user'
         ];
 
         $request = new Request(false);
@@ -115,7 +116,8 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
                 'isAdmin' => 'boolean',
                 'email' => 'email',
                 'ip' => 'ip',
-                'nullable' => 'nullable'
+                'nullable' => 'nullable',
+                'type' => 'in:admin:user'
             ]);
 
         $output = TestRouter::debugOutput('/my/test/url', 'get');
@@ -133,6 +135,7 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
             'isAdmin' => 'not true',
             'email' => 'user#provider.com',
             'ip' => '192.168.1s05.22',
+            'type' => 'manager'
         ];
 
         $request = new Request(false);
@@ -146,7 +149,8 @@ class InputValidationTest extends \PHPUnit\Framework\TestCase
                 'isAdmin' => 'boolean',
                 'email' => 'email',
                 'ip' => 'ip',
-                'nullable' => 'required'
+                'nullable' => 'required',
+                'type' => 'in:admin:user'
             ]);
 
         TestRouter::debug('/my/test/url', 'get');

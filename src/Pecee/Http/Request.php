@@ -139,7 +139,9 @@ class Request
         if($url !== null){
             $this->setUrl(new Url($url));
         }else{
-            $this->setUrl(new Url(urldecode($this->getHeader('request-uri'))));
+            $request_uri = $this->getHeader('request-uri');
+            if($request_uri !== null)
+                $this->setUrl(new Url(urldecode($request_uri)));
         }
         $this->setContentType((string)$this->getHeader('content-type'));
         $this->setMethod((string)($_POST[static::FORCE_METHOD_KEY] ?? $this->getHeader('request-method')));

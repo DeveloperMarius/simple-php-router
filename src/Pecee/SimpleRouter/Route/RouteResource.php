@@ -109,8 +109,7 @@ class RouteResource extends LoadableRoute implements IControllerRoute
         if ($regexMatch === null && $this->getParameters() === null) {
             return false;
         }
-
-        $action = strtolower(trim($this->getParameters()['action']));
+        $action = strtolower(trim($this->getParameters()['action'] ?? ''));
         $id = $this->getParameters()['id'];
 
         // Remove action parameter
