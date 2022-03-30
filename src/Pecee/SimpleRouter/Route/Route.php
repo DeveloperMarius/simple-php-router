@@ -11,6 +11,9 @@ use Pecee\SimpleRouter\Router;
 
 abstract class Route implements IRoute
 {
+
+    public static bool $parameterReverseOrder = true;
+
     protected const PARAMETERS_REGEX_FORMAT = '%s([\w]+)(\%s?)%s';
     protected const PARAMETERS_DEFAULT_REGEX = '[\w-]+';
 
@@ -519,7 +522,7 @@ abstract class Route implements IRoute
             $parameters = $this->originalParameters;
         }
 
-        return array_merge($parameters, $this->parameters);
+        return self::$parameterReverseOrder ? array_merge($parameters, $this->parameters) : array_merge($this->parameters, $parameters);
     }
 
     /**
