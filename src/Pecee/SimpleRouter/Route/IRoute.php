@@ -162,12 +162,20 @@ interface IRoute
     public function getParameters(): array;
 
     /**
-     * Get parameters
+     * Set parameters
      *
      * @param array $parameters
      * @return static
      */
     public function setParameters(array $parameters): self;
+
+    /**
+     * Set original parameters
+     *
+     * @param array $originalParameters
+     * @return static
+     */
+    public function setOriginalParameters(array $originalParameters): self;
 
     /**
      * Merge with information from another route.

@@ -539,6 +539,19 @@ abstract class Route implements IRoute
     }
 
     /**
+     * Set original parameters
+     *
+     * @param array $originalParameters
+     * @return static
+     */
+    public function setOriginalParameters(array $originalParameters): IRoute
+    {
+        $this->originalParameters = $originalParameters;
+
+        return $this;
+    }
+
+    /**
      * Add middleware class-name
      *
      * @param string $middleware
