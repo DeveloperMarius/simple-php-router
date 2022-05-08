@@ -34,10 +34,10 @@ class ValidatorRuleMax extends InputValidatorRule
         $input_value = $input->getValue();
         if (is_array($input_value))
             return count($input_value);
-        if (is_numeric($input_value))
-            return is_int($input_value) ? $input_value : floatval($input_value);
         if (is_string($input_value))
             return strlen($input_value);
+        if (is_numeric($input_value))
+            return is_int($input_value) ? $input_value : floatval($input_value);
         return null;
     }
 
