@@ -48,7 +48,7 @@ class ValidatorRuleMaxLength extends InputValidatorRule
 
     public function getErrorMessage(): string
     {
-        return 'The Input %s is too big';
+        return 'The Input %s is too long';
     }
 
 }

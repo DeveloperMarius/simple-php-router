@@ -48,7 +48,7 @@ class ValidatorRuleMinLength extends InputValidatorRule
 
     public function getErrorMessage(): string
     {
-        return 'The Input %s is too small';
+        return 'The Input %s is too short';
     }
 
 }
