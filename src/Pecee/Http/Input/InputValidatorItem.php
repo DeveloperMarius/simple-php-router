@@ -91,7 +91,7 @@ class InputValidatorItem
         if(is_string($settings)){
             //Add "\\\\" to allow one Backslash
             //https://stackoverflow.com/questions/11044136/right-way-to-escape-backslash-in-php-regex/15369828#answer-15369828
-            preg_match_all('/([a-zA-Z\\\\=\/<>]+)(?::((?:\\\\[|]|[^\|])+))?\|?/', $settings, $matches);
+            preg_match_all('/([a-zA-Z\\\\=\/<>_]+)(?::((?:\\\\[|]|[^\|])+))?\|?/', $settings, $matches);
             for($i = 0; $i < sizeof($matches[0]); $i++){
                 $tag = $matches[1][$i];
                 preg_match_all('/(?:\\\\[:|]|[^:\|])+/', $matches[2][$i], $matches2);
