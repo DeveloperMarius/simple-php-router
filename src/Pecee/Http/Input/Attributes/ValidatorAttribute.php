@@ -24,7 +24,7 @@ class ValidatorAttribute{
     ){
         if($this->validator === '')
             $this->validator = null;
-        if(str_starts_with($type, '?')){
+        if($this->type !== null && str_starts_with($this->type, '?')){
             $this->type = substr($this->type, 1);
             $this->addValidator('nullable');
         }
@@ -56,6 +56,11 @@ class ValidatorAttribute{
      */
     public function setType(?string $type): void{
         $this->type = $type;
+        if($this->type !== null && str_starts_with($this->type, '?')){
+            $this->type = substr($this->type, 1);
+            $this->addValidator('nullable');
+        }
+        $this->type = $type;
     }
 
     /**
@@ -71,7 +76,8 @@ class ValidatorAttribute{
      */
     public function addValidator(string $validator){
         if($this->validator !== null){
-            $this->validator .= '|' . $validator;
+            if(!str_contains($this->validator, $validator))
+                $this->validator .= '|' . $validator;
         }else{
             $this->validator = $validator;
         }
