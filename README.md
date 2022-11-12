@@ -18,6 +18,10 @@ If you like simple-router and wish to see the continued development and maintena
 
 You can donate any amount of your choice by [clicking here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NNX4D2RUSALCN).
 
+### This is a fork
+This is a fork of the router which brings a lot of bugfixes and features.
+We updated the project to require php8!
+
 ## Table of Contents
 
 - [Getting started](#getting-started)
