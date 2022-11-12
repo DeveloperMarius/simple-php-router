@@ -13,22 +13,23 @@ use Attribute;
 class ValidatorAttribute
 {
 
+    private ?string $type;
+    private array $validator;
+
     /**
      * @param string|null $name
      * @param string|null $type
-     * @param string|null $validator
+     * @param string|array $validator
      */
     public function __construct(
         private ?string $name = null,
-        private ?string $type = null,
-        private ?string $validator = null
+        ?string $type = null,
+        string|array $validator = array()
     ){
-        if($this->validator === '')
-            $this->validator = null;
-        if($this->type !== null && str_starts_with($this->type, '?')){
-            $this->type = substr($this->type, 1);
-            $this->addValidator('nullable');
-        }
+        if(is_string($validator))
+            $validator = explode('|', $validator);
+        $this->validator = $validator;
+        $this->setType($type);
     }
 
     /**
@@ -40,9 +41,9 @@ class ValidatorAttribute
     }
 
     /**
-     * @param string|null $name
+     * @param string $name
      */
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -56,22 +57,37 @@ class ValidatorAttribute
     }
 
     /**
+     * @return string|null
+     */
+    public function getValidatorType(): ?string
+    {
+        return match ($this->type){
+            'bool' => 'boolean',
+            'int' => 'integer',
+            default => $this->type
+        };
+    }
+
+    /**
      * @param string|null $type
      */
     public function setType(?string $type): void
     {
-        $this->type = $type;
-        if($this->type !== null && str_starts_with($this->type, '?')){
-            $this->type = substr($this->type, 1);
-            $this->addValidator('nullable');
+        if($type === null){
+            $this->type = null;
+            return;
+        }
+        if(str_starts_with($type, '?')){
+            $type = substr($type, 1);
+            array_unshift($this->validator, 'nullable');
         }
         $this->type = $type;
     }
 
     /**
-     * @return string|null
+     * @return array
      */
-    public function getValidator(): ?string
+    public function getValidator(): array
     {
         return $this->validator;
     }
@@ -80,25 +96,23 @@ class ValidatorAttribute
      * @param string $validator
      * @return void
      */
-    public function addValidator(string $validator)
+    public function addValidator(string $validator): void
     {
-        if($this->validator !== null){
-            $this->validator .= '|' . $validator;
-        }else{
-            $this->validator = $validator;
-        }
+        if(!in_array($validator, $this->validator))
+            $this->validator[] = $validator;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getFullValidator(): string
+    public function getFullValidator(): array
     {
-        if($this->getValidator() === null || !str_contains($this->getValidator(), 'nullable'))
-            $this->addValidator('required');
-        if($this->getValidator() === null || ($this->getType() !== null && !str_contains($this->getValidator(), $this->getType())))
-            $this->addValidator($this->getType());
-        return $this->getValidator() ?? '';
+        $validator = $this->getValidator();
+        if($this->getValidatorType() !== null && !in_array($this->getValidatorType(), $validator))
+            array_unshift($validator, $this->getValidatorType());
+        if(!in_array('nullable', $validator))
+            array_unshift($validator, 'required');
+        return $validator;
     }
 
 }
