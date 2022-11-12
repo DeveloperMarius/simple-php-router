@@ -11,6 +11,9 @@ use Pecee\SimpleRouter\Router;
 
 abstract class Route implements IRoute
 {
+
+    public static bool $parameterReverseOrder = true;
+
     protected const PARAMETERS_REGEX_FORMAT = '%s([\w]+)(\%s?)%s';
     protected const PARAMETERS_DEFAULT_REGEX = '[\w-]+';
 
@@ -519,7 +522,7 @@ abstract class Route implements IRoute
             $parameters = $this->originalParameters;
         }
 
-        return array_merge($parameters, $this->parameters);
+        return self::$parameterReverseOrder ? array_merge($parameters, $this->parameters) : array_merge($this->parameters, $parameters);
     }
 
     /**
@@ -531,6 +534,19 @@ abstract class Route implements IRoute
     public function setParameters(array $parameters): IRoute
     {
         $this->parameters = array_merge($this->parameters, $parameters);
+
+        return $this;
+    }
+
+    /**
+     * Set original parameters
+     *
+     * @param array $originalParameters
+     * @return static
+     */
+    public function setOriginalParameters(array $originalParameters): IRoute
+    {
+        $this->originalParameters = $originalParameters;
 
         return $this;
     }
@@ -633,16 +649,16 @@ abstract class Route implements IRoute
      * Get InputValidator if one is present
      * @return InputValidator|array|null
      */
-    public function getInputValidator()
+    public function getInputValidator(): InputValidator|array|null
     {
         return $this->inputValidator;
     }
 
     /**
-     * @param InputValidator|array $validator
+     * @param array|InputValidator $validator
      * @return void
      */
-    public function validateInputs($validator)
+    public function validateInputs(array|InputValidator $validator)
     {
         $this->inputValidator = $validator;
     }

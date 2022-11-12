@@ -29,7 +29,8 @@
   "require": {
     "php": "^8.0.3",
     "ext-json": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "somnambulist/validation": "^1.4"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5",

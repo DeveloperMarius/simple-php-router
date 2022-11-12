@@ -73,8 +73,10 @@ class RouteGroup extends Route implements IGroupRoute
 
         $parsedPrefix = $this->getPrefix();
 
-        foreach ($this->getParameters() as $parameter => $value) {
-            $parsedPrefix = str_ireplace('{' . $parameter . '}', $value, $parsedPrefix);
+        if($parsedPrefix !== null){
+            foreach($this->getParameters() as $parameter => $value){
+                $parsedPrefix = str_ireplace('{' . $parameter . '}', $value, $parsedPrefix);
+            }
         }
 
         /* Skip if prefix doesn't match */

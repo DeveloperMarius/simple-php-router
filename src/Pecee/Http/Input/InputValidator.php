@@ -4,7 +4,6 @@ namespace Pecee\Http\Input;
 
 use Closure;
 use Pecee\Http\Input\Attributes\ValidatorAttribute;
-use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\Route\IRoute;
@@ -13,6 +12,8 @@ use Pecee\SimpleRouter\SimpleRouter;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionMethod;
+use Somnambulist\Components\Validation\Factory;
+use Somnambulist\Components\Validation\Validation;
 
 class InputValidator
 {
@@ -31,6 +32,11 @@ class InputValidator
     private static $throwExceptions = true;
 
     /**
+     * @var Factory|null $factory
+     */
+    private static ?Factory $factory = null;
+
+    /**
      * @param bool $throwExceptions
      */
     public static function setThrowExceptions(bool $throwExceptions): void
@@ -47,24 +53,15 @@ class InputValidator
     }
 
     /**
-     * @var string|null $customValidatorRuleNamespace
+     * @return Factory
      */
-    private static $customValidatorRuleNamespace = null;
-
-    /**
-     * @param string $customValidatorRuleNamespace
-     */
-    public static function setCustomValidatorRuleNamespace(string $customValidatorRuleNamespace): void
+    public static function getFactory(): Factory
     {
-        self::$customValidatorRuleNamespace = $customValidatorRuleNamespace;
-    }
+        if(self::$factory === null){
+            self::$factory = new Factory();
 
-    /**
-     * @return string|null
-     */
-    public static function getCustomValidatorRuleNamespace(): ?string
-    {
-        return self::$customValidatorRuleNamespace;
+        }
+        return self::$factory;
     }
 
     /* InputValidator Object */
@@ -72,19 +69,11 @@ class InputValidator
     /**
      * @var string|Closure|null
      */
-    protected $rewriteCallbackOnFailure = null;
+    protected string|Closure|null $rewriteCallbackOnFailure = null;
     /**
-     * @var InputValidatorItem[]
+     * @var array $rules
      */
-    protected $items = array();
-    /**
-     * @var bool|null
-     */
-    protected $valid = null;
-    /**
-     * @var InputValidatorItem[]|null
-     */
-    protected $errors = null;
+    protected array $rules;
 
     /**
      * Creates a new InputValidator
@@ -97,171 +86,90 @@ class InputValidator
 
     public function __construct()
     {
+        $this->rules = array();
     }
 
     /**
-     * @param $settings
+     * @param string $key
+     * @param string $validation
      * @return self
      */
-    public function parseSettings($settings): self
+    public function addRule(string $key, string $validation): self
     {
-        if (is_array($settings)) {
-            foreach ($settings as $key => $item) {
-                if ($item instanceof InputValidatorItem)
-                    $this->add($item);
-                else if ((is_string($item) || is_array($item) || $item instanceof InputValidatorRule) && is_string($key)) {
-                    $itemObject = InputValidatorItem::make($key);
-                    $itemObject->parseSettings($item);
-                    $this->add($itemObject);
-                }
-            }
-        }
+        $this->rules[$key] = $validation;
         return $this;
+    }
+
+    /**
+     * @param array $rules
+     * @return self
+     */
+    public function setRules(array $rules): self
+    {
+        $this->rules = $rules;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
     }
 
     /**
      * @param string|Closure $callback
      * @return self
      */
-    protected function rewriteCallbackOnFailure(string $callback): self
+    protected function rewriteCallbackOnFailure(string|Closure $callback): self
     {
         $this->rewriteCallbackOnFailure = $callback;
         return $this;
     }
 
     /**
-     * @return InputValidatorItem[]
-     */
-    public function getItems(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param InputValidatorItem $validator
-     * @return self
-     */
-    public function add(InputValidatorItem $validator): self
-    {
-        $this->items[] = $validator;
-        return $this;
-    }
-
-    /**
-     * Set all Input Items that should be validated
-     * @param InputValidatorItem[] $items
-     * @return self
-     */
-    public function items(array $items): self
-    {
-        $this->items = $items;
-        return $this;
-    }
-
-    /**
      * @param InputHandler $inputHandler
-     * @return bool
-     * @throws InputValidationException
+     * @return Validation
      */
-    public function validateInputs(InputHandler $inputHandler): bool
+    public function validateInputs(InputHandler $inputHandler): Validation
     {
-        $this->validateItems($inputHandler);
-        if ($this->fails()) {
-            if(self::isThrowExceptions()){
-                throw new InputValidationException('Failed to validate inputs', $this->getErrors());
-            }
-        }
-        return $this->passes();
-    }
-
-    /**
-     * @param InputHandler $inputHandler
-     * @return bool
-     */
-    private function validateItems(InputHandler $inputHandler): bool
-    {
-        $this->errors = array();
-        foreach ($this->getItems() as $item) {
-            $inputItem = $inputHandler->find($item->getKey());
-            $callback = $item->validate($inputItem);
-            if (!$callback)
-                $this->errors[] = $item;
-        }
-        $this->valid = empty($this->errors);
-        return $this->passes();
+        return $this->validateItems($inputHandler);
     }
 
     /**
      * @param Request $request
-     * @return bool
-     * @throws InputValidationException
+     * @return Validation
      */
-    public function validate(Request $request): bool
+    public function validateRequest(Request $request): Validation
     {
-        $this->validateItems($request->getInputHandler());
-        if ($this->fails()) {
-            if ($this->rewriteCallbackOnFailure !== null)
-                $request->setRewriteCallback($this->rewriteCallbackOnFailure);
-            if(self::isThrowExceptions()){
-                throw new InputValidationException('Failed to validate inputs', $this->getErrors());
-            }
+        return $this->validateItems($request->getInputHandler());
+    }
+
+    /**
+     * @param InputHandler $inputHandler
+     * @return Validation
+     */
+    private function validateItems(InputHandler $inputHandler): Validation
+    {
+        $validation = self::getFactory()->validate($inputHandler->values(array_keys($this->getRules())), $this->getRules());
+        if ($validation->fails() && self::isThrowExceptions()) {
+            throw new InputValidationException('Failed to validate inputs', $validation);
         }
-        return $this->passes();
+        return $validation;
     }
 
     /**
      * @param array $data
-     * @return bool
-     * @throws InputValidationException
+     * @return Validation
      */
-    public function validateData(array $data): bool
+    public function validateData(array $data): Validation
     {
-        $this->errors = array();
-        foreach ($this->getItems() as $item) {
-            $inputItem = new InputItem($item->getKey(), $data[$item->getKey()] ?? null);
-            $callback = $item->validate($inputItem);
-            if (!$callback)
-                $this->errors[] = $item;
+        $validation = self::getFactory()->validate($data, $this->getRules());
+        if ($validation->fails() && self::isThrowExceptions()) {
+            throw new InputValidationException('Failed to validate inputs', $validation);
         }
-        $this->valid = empty($this->errors);
-        if ($this->fails()) {
-            if(self::isThrowExceptions()){
-                throw new InputValidationException('Failed to validate inputs', $this->getErrors());
-            }
-        }
-        return $this->passes();
-    }
-
-    /**
-     * Check if inputs passed validation
-     * @return bool
-     */
-    public function passes(): bool
-    {
-        if ($this->valid === null)
-            throw new InputsNotValidatedException();
-        return $this->valid;
-    }
-
-    /**
-     * Check if inputs failed valida
-     * @return bool
-     */
-    public function fails(): bool
-    {
-        if ($this->valid === null)
-            throw new InputsNotValidatedException();
-        return !$this->valid;
-    }
-
-    /**
-     * @return InputValidatorItem[]|null
-     */
-    public function getErrors(): ?array
-    {
-        if ($this->valid === null)
-            throw new InputsNotValidatedException();
-        return $this->errors;
+        return $validation;
     }
 
     /**
@@ -270,7 +178,8 @@ class InputValidator
      * @return InputValidator|null
      * @since 8.0
      */
-    public static function parseValidatorFromRoute(Router $router, IRoute $route): ?InputValidator{
+    public static function parseValidatorFromRoute(Router $router, IRoute $route): ?InputValidator
+    {
         $routeAttributeValidator = null;
         if(InputValidator::$parseAttributes){
             $reflectionMethod = self::getReflection($router, $route);
@@ -281,9 +190,10 @@ class InputValidator
                     foreach($attributes as $attribute){
                         /* @var ValidatorAttribute $routeAttribute */
                         $routeAttribute = $attribute->newInstance();
-                        $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
+                        if($routeAttribute->getName() !== null)
+                            $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
                     }
-                    $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
+                    $routeAttributeValidator = InputValidator::make()->setRules($settings);
                 }
             }
         }
@@ -296,7 +206,9 @@ class InputValidator
      * @return InputValidator|null
      * @since 8.0
      */
-    public static function parseValidatorFromRouteParameters(Router $router, IRoute $route): ?InputValidator{
+    public static function parseValidatorFromRouteParameters(Router $router, IRoute $route): ?InputValidator
+    {
+        $parsedData = $route->getParameters();
         $routeAttributeValidator = null;
         if(InputValidator::$parseAttributes){
             $reflectionMethod = self::getReflection($router, $route);
@@ -309,13 +221,22 @@ class InputValidator
                         if(sizeof($attributes) > 0){
                             /* @var ValidatorAttribute $routeAttribute */
                             $routeAttribute = $attributes[0]->newInstance();
+                            if($routeAttribute->getName() === null)
+                                $routeAttribute->setName($parameter->getName());
+                            if($routeAttribute->getType() === null && $parameter->getType() !== null){
+                                $routeAttribute->setType($parameter->getType()->getName());
+                                if($parameter->getType()->allowsNull())
+                                    $routeAttribute->addValidator('nullable');
+                            }
                             $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
+                            $parsedData[$routeAttribute->getName()] = (new InputParser(new InputItem($routeAttribute->getName(), $parsedData[$routeAttribute->getName()])))->parseFromSetting($routeAttribute->getType())->getValue();
                         }
                     }
-                    $routeAttributeValidator = InputValidator::make()->parseSettings($settings);
+                    $routeAttributeValidator = InputValidator::make()->setRules($settings);
                 }
             }
         }
+        $route->setOriginalParameters($parsedData);
         return $routeAttributeValidator;
     }
 
@@ -324,7 +245,8 @@ class InputValidator
      * @param IRoute|null $route
      * @return ReflectionFunction|ReflectionMethod|null
      */
-    public static function getReflection(Router $router, ?IRoute $route = null){
+    public static function getReflection(Router $router, ?IRoute $route = null)
+    {
         $reflectionMethod = null;
         if($route === null){
             $route = SimpleRouter::router()->getCurrentProcessingRoute();

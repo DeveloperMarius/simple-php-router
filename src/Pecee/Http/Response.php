@@ -2,6 +2,7 @@
 
 namespace Pecee\Http;
 
+use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use Pecee\Exceptions\InvalidArgumentException;
 
@@ -40,6 +41,7 @@ class Response
      * @param string $url
      * @param int|null $httpCode
      */
+    #[NoReturn]
     public function redirect(string $url, ?int $httpCode = null): void
     {
         if ($httpCode !== null) {
@@ -50,6 +52,7 @@ class Response
         exit(0);
     }
 
+    #[NoReturn]
     public function refresh(): void
     {
         $this->redirect($this->request->getUrl()->getOriginalUrl());
@@ -103,7 +106,8 @@ class Response
      * @param int $dept JSON debt.
      * @throws InvalidArgumentException
      */
-    public function json($value, ?int $options = null, int $dept = 512): void
+    #[NoReturn]
+    public function json(mixed $value, ?int $options = null, int $dept = 512): void
     {
         if (($value instanceof JsonSerializable) === false && is_array($value) === false) {
             throw new InvalidArgumentException('Invalid type for parameter "value". Must be of type array or object implementing the \JsonSerializable interface.');

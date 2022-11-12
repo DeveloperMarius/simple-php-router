@@ -62,6 +62,9 @@ class InputParser{
                 case 'ipv6':
                     $this->toIp('ipv6');
                     break;
+                case 'mixed':
+                    //Nothing
+                    break;
             }
         }
         return $this;

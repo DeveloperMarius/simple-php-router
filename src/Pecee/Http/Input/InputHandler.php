@@ -4,12 +4,12 @@ namespace Pecee\Http\Input;
 
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Input\Attributes\ValidatorAttribute;
-use Pecee\Http\Input\Exceptions\InputsNotValidatedException;
-use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter;
+use Somnambulist\Components\Validation\Validation;
 
-class InputHandler implements IInputHandler{
+class InputHandler implements IInputHandler
+{
 
     /**
      * @var bool $handleEmptyStringAsNull
@@ -456,7 +456,8 @@ class InputHandler implements IInputHandler{
         foreach($attributes as $attribute){
             /* @var ValidatorAttribute $routeAttribute */
             $routeAttribute = $attribute->newInstance();
-            $validator_attributes[] = $routeAttribute;
+            if($routeAttribute->getName() !== null)
+                $validator_attributes[] = $routeAttribute;
         }
         return $validator_attributes;
     }
@@ -487,9 +488,9 @@ class InputHandler implements IInputHandler{
 
     /**
      * @param InputValidator|array|null $validator
-     * @return InputValidator
+     * @return Validation
      */
-    public function validateAttributes(InputValidator|array|null $validator = null): InputValidator{
+    public function validateAttributes(InputValidator|array|null $validator = null): Validation{
         if($validator === null){
             $validator = array();
             foreach($this->getValidatorAttributes() as $attribute){
@@ -498,11 +499,10 @@ class InputHandler implements IInputHandler{
         }
         if(!$validator instanceof InputValidator){
             $tmp = InputValidator::make();
-            $tmp->parseSettings($validator);
+            $tmp->setRules($validator);
             $validator = $tmp;
         }
-        $validator->validateInputs($this);
-        return $validator;
+        return $validator->validateInputs($this);
     }
 
     /**

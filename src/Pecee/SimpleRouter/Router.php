@@ -5,8 +5,6 @@ namespace Pecee\SimpleRouter;
 use Exception;
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Exceptions\MalformedUrlException;
-use Pecee\Http\Input\Attributes\ValidatorAttribute;
-use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\Http\Middleware\Exceptions\TokenMismatchException;
@@ -420,12 +418,12 @@ class Router
                         $routeAttributeValidator = InputValidator::parseValidatorFromRoute($this, $route);
                         $routeParameterValidator = InputValidator::parseValidatorFromRouteParameters($this, $route);
                         if($route->getInputValidator() !== null || $routeAttributeValidator !== null || $routeParameterValidator !== null){
-                            if($route->getInputValidator() !== null)
-                                $this->getRequest()->validate($route->getInputValidator());
-                            if($routeAttributeValidator !== null)
-                                $this->getRequest()->validate($routeAttributeValidator);
-                            if($routeParameterValidator !== null)
-                                $routeParameterValidator->validateData($route->getParameters());
+                            if($route->getInputValidator() !== null && $this->getRequest()->validate($route->getInputValidator())->fails())
+                                continue;
+                            if($routeAttributeValidator !== null && $this->getRequest()->validate($routeAttributeValidator)->fails())
+                                continue;
+                            if($routeParameterValidator !== null && $routeParameterValidator->validateData($route->getParameters())->fails())
+                                continue;
 
                             $output = $this->handleRouteRewrite($key, $url);
                             if($output !== null){
@@ -633,10 +631,10 @@ class Router
             }
 
             /* Using @ is most definitely a controller@method or alias@method */
-            if (strpos($name, '@') !== false) {
+            if (str_contains($name, '@')) {
                 [$controller, $method] = array_map('strtolower', explode('@', $name));
 
-                if ($controller === strtolower($route->getClass()) && $method === strtolower($route->getMethod())) {
+                if ($controller === strtolower($route->getClass() ?? '') && $method === strtolower($route->getMethod() ?? '')) {
                     $this->debug('Found route "%s" by controller "%s" and method "%s"', $route->getUrl(), $controller, $method);
 
                     return $route;
@@ -645,10 +643,10 @@ class Router
 
             /* Check if callback matches (if it's not a function) */
             $callback = $route->getCallback();
-            if (is_string($callback) === true && is_callable($callback) === false && strpos($name, '@') !== false && strpos($callback, '@') !== false) {
+            if (is_string($callback) === true && is_callable($callback) === false && str_contains($name, '@') && str_contains($callback, '@')) {
 
                 /* Check if the entire callback is matching */
-                if (strpos($callback, $name) === 0 || strtolower($callback) === strtolower($name)) {
+                if (str_starts_with($callback, $name) || strtolower($callback) === strtolower($name)) {
                     $this->debug('Found route "%s" by callback "%s"', $route->getUrl(), $name);
 
                     return $route;
@@ -733,7 +731,7 @@ class Router
         }
 
         /* Using @ is most definitely a controller@method or alias@method */
-        if (is_string($name) === true && strpos($name, '@') !== false) {
+        if (is_string($name) === true && str_contains($name, '@')) {
             [$controller, $method] = explode('@', $name);
 
             /* Loop through all the routes to see if we can find a match */

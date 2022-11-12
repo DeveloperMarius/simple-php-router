@@ -2,14 +2,13 @@
 
 namespace Pecee\Http;
 
-use Pecee\Http\Exceptions\MalformedUrlException;
-use Pecee\Http\Input\IInputHandler;
 use Pecee\Http\Input\InputHandler;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\SimpleRouter\Route\ILoadableRoute;
 use Pecee\SimpleRouter\Route\RouteUrl;
 use Pecee\SimpleRouter\SimpleRouter;
+use Somnambulist\Components\Validation\Validation;
 
 class Request
 {
@@ -139,7 +138,9 @@ class Request
         if($url !== null){
             $this->setUrl(new Url($url));
         }else{
-            $this->setUrl(new Url(urldecode($this->getHeader('request-uri'))));
+            $request_uri = $this->getHeader('request-uri');
+            if($request_uri !== null)
+                $this->setUrl(new Url(urldecode($request_uri)));
         }
         $this->setContentType((string)$this->getHeader('content-type'));
         $this->setMethod((string)($_POST[static::FORCE_METHOD_KEY] ?? $this->getHeader('request-method')));
@@ -565,16 +566,16 @@ class Request
 
     /**
      * @param InputValidator|array $validator
-     * @return InputValidator
+     * @return Validation
      */
-    public function validate(InputValidator|array $validator): InputValidator{
+    public function validate(InputValidator|array $validator): Validation
+    {
         if(!$validator instanceof InputValidator){
             $tmp = InputValidator::make();
-            $tmp->parseSettings($validator);
+            $tmp->setRules($validator);
             $validator = $tmp;
         }
-        $validator->validate($this);
-        return $validator;
+        return $validator->validateRequest($this);
     }
 
     /**
