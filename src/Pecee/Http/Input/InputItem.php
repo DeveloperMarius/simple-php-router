@@ -77,7 +77,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     /**
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         if(is_array($this->value)){
             return $this->parseValueFromArray($this->value);
@@ -90,7 +90,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      */
     public function hasInputItems(): bool
     {
-        return is_array($this->value);
+        return is_array($this->value) && array_keys($this->value) !== range(0, count($this->value) - 1);
     }
 
     /**
@@ -98,7 +98,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      */
     public function getInputItems(): array
     {
-        if(is_array($this->value)){
+        if($this->hasInputItems()){
             return $this->value;
         }
         return array();
@@ -129,7 +129,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      * @param mixed $value
      * @return static
      */
-    public function setValue($value): IInputItem
+    public function setValue(mixed $value): IInputItem
     {
         $this->value = $value;
 

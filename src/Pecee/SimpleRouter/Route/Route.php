@@ -183,7 +183,7 @@ abstract class Route implements IRoute
                 $values[$name] = (isset($matches[$name]) === true && $matches[$name] !== '') ? $matches[$name] : null;
             }
 
-            $values = array_merge($values, $lastParams);
+            $values = self::$parameterReverseOrder ? array_merge($values, $lastParams) : array_merge($lastParams, $values);
         }
 
         $this->originalParameters = $values;

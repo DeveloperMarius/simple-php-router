@@ -312,7 +312,7 @@ class InputFile implements IInputItem, IteratorAggregate
      * @param mixed $value
      * @return static
      */
-    public function setValue($value): IInputItem
+    public function setValue(mixed $value): IInputItem
     {
         $this->filename = $value;
 
@@ -324,7 +324,7 @@ class InputFile implements IInputItem, IteratorAggregate
      */
     public function hasInputItems(): bool
     {
-        return is_array($this->value);
+        return is_array($this->value) && array_keys($this->value) !== range(0, count($this->value) - 1);
     }
 
     /**
@@ -332,7 +332,7 @@ class InputFile implements IInputItem, IteratorAggregate
      */
     public function getInputItems(): array
     {
-        if(is_array($this->value)){
+        if($this->hasInputItems()){
             return $this->value;
         }
         return array();

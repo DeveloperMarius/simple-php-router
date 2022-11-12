@@ -249,7 +249,8 @@ class InputHandler implements IInputHandler{
         foreach ($array as $key => $value) {
 
             // Handle array input
-            if (is_array($value) === true) {
+            if (is_array($value) === true && array_keys($value) !== range(0, count($value) - 1)) {
+                //Parse again if associative array
                 $value = $this->parseInputItem($value);
             }
 
@@ -266,12 +267,13 @@ class InputHandler implements IInputHandler{
      * Find input object
      *
      * @param string $index
+     * @param mixed $defaultValue
      * @param string|array ...$methods - Strings or one array of methods
      * @return InputItem|InputFile
      */
-    public function find(string $index, ...$methods)
+    public function find(string $index, mixed $defaultValue = null, ...$methods)
     {
-        $element = new InputItem($index, null);
+        $element = new InputItem($index, $defaultValue);
 
         if(count($methods) == 1) {
             $methods = is_array($methods[0]) ? array_values($methods[0]) : $methods;
@@ -288,7 +290,7 @@ class InputHandler implements IInputHandler{
         if (($element->getValue() === null && count($methods) === 0) || (count($methods) !== 0 && in_array('file', $methods, true) === true)) {
             $element = $this->file($index);
             if($element->getValue() === null){
-                $element = new InputItem($index, null);
+                $element = new InputItem($index, $defaultValue);
             }
         }
 
@@ -299,13 +301,13 @@ class InputHandler implements IInputHandler{
      * Get input element value matching index
      *
      * @param string $index
-     * @param string|mixed|null $defaultValue
+     * @param mixed $defaultValue
      * @param string|array ...$methods
      * @return mixed
      */
-    public function value(string $index, $defaultValue = null, ...$methods)
+    public function value(string $index, mixed $defaultValue = null, ...$methods)
     {
-        $input = $this->find($index, ...$methods);
+        $input = $this->find($index, $defaultValue, ...$methods);
 
         if ($input instanceof IInputItem) {
             $input = $input->getValue();
@@ -342,12 +344,21 @@ class InputHandler implements IInputHandler{
     /**
      * Check if a input-item exist
      *
-     * @param string $index
+     * @param string|array $index
      * @param string|array ...$methods
      * @return bool
      */
-    public function exists(string $index, ...$methods): bool
+    public function exists(string|array $index, ...$methods): bool
     {
+        if(is_array($index) === true) {
+            foreach($index as $key) {
+                if($this->value($key, null, ...$methods) === null) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         return $this->value($index, null, ...$methods) !== null;
     }
 
