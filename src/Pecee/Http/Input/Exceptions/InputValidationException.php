@@ -14,16 +14,16 @@ class InputValidationException extends Exception
      */
     private Validation $validation;
 
-    public function __construct($message, Validation $validation, $code = 0, Throwable $previous = null)
+    public function __construct($message, ?Validation $validation = null, $code = 0, Throwable $previous = null)
     {
         $this->validation = $validation;
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return Validation
+     * @return Validation|null
      */
-    public function getValidation(): Validation
+    public function getValidation(): ?Validation
     {
         return $this->validation;
     }
@@ -33,6 +33,8 @@ class InputValidationException extends Exception
      */
     public function getErrorMessages(): array
     {
+        if($this->getValidation() === null)
+            return array();
         return $this->getValidation()->errors()->all();
     }
 
@@ -42,6 +44,8 @@ class InputValidationException extends Exception
      */
     public function getErrorsForItem(string $key): ?array
     {
+        if($this->getValidation() === null)
+            return null;
         $errors = $this->getValidation()->errors()->get($key);
         if(empty($errors))
             return null;
@@ -53,7 +57,7 @@ class InputValidationException extends Exception
      */
     public function getDetailedMessage(): string
     {
-        return 'Failed to validate inputs: ' . join('; ', $this->getErrorMessages());
+        return 'Failed to validate inputs: ' . (empty($this->getErrorMessages()) ? 'keine' : join('; ', $this->getErrorMessages()));
     }
 
 }
