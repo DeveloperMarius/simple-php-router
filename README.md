@@ -20,7 +20,7 @@ You can donate any amount of your choice by [clicking here](https://www.paypal.c
 
 ### This is a fork
 This is a fork of the router which brings a lot of bugfixes and features.
-We updated the project to require php8!
+We updated the project to require php8.1!
 
 ## Table of Contents
 
@@ -1202,7 +1202,7 @@ You can use the `InputHandler` class to easily access and manage parameters from
 
 ### Get single parameter value
 
-```input($index, $defaultValue, ...$methods);```
+```$this->input($index, $defaultValue, ...$methods);```
 
 To quickly get a value from a parameter, you can use the `input` helper function.
 
@@ -1216,7 +1216,7 @@ This function returns a `string` unless the parameters are grouped together, in 
 This example matches both POST and GET request-methods and if name is empty the default-value "Guest" will be returned. 
 
 ```php
-$name = input('name', 'Guest', 'post', 'get');
+$name = $this->input('name', 'Guest', 'post', 'get');
 ```
 
 ### Get parameter object
@@ -1225,34 +1225,34 @@ When dealing with file-uploads it can be useful to retrieve the raw parameter ob
 
 **Search for object with default-value across multiple or specific request-methods:**
 
-The example below will return an `InputItem` object if the parameter was found or return the `$defaultValue`. If parameters are grouped, it will return an array of `InputItem` objects.
+The example below will return an `InputItem` object if the parameter was found or an `InputItem` with the `$defaultValue`.
 
 ```php
-$object = input()->find($index, $defaultValue = null, ...$methods);
+$object = $this->input()->find($index, $defaultValue = null, ...$methods);
 ```
 
 **Getting specific `$_GET` parameter as `InputItem` object:**
 
-The example below will return an `InputItem` object if the parameter was found or return the `$defaultValue`. If parameters are grouped, it will return an array of `InputItem` objects.
+The example below will return an `InputItem` object if the parameter was found or an `InputItem` with the `$defaultValue`.
 
 ```php
-$object = input()->get($index, $defaultValue = null);
+$object = $this->input()->get($index, $defaultValue = null);
 ```
 
 **Getting specific `$_POST` parameter as `InputItem` object:**
 
-The example below will return an `InputItem` object if the parameter was found or return the `$defaultValue`. If parameters are grouped, it will return an array of `InputItem` objects.
+The example below will return an `InputItem` object if the parameter was found or an `InputItem` with the `$defaultValue`.
 
 ```php
-$object = input()->post($index, $defaultValue = null);
+$object = $this->input()->post($index, $defaultValue = null);
 ```
 
 **Getting specific `$_FILE` parameter as `InputFile` object:**
 
-The example below will return an `InputFile` object if the parameter was found or return the `$defaultValue`. If parameters are grouped, it will return an array of `InputFile` objects.
+The example below will return an `InputFile` object if the parameter was found or an `InputFile` with the `$defaultValue`.
 
 ```php
-$object = input()->file($index, $defaultValue = null);
+$object = $this->input()->file($index, $defaultValue = null);
 ```
 
 ### Managing files
@@ -1264,7 +1264,7 @@ $object = input()->file($index, $defaultValue = null);
  */
 
 /* @var $image \Pecee\Http\Input\InputFile */
-foreach(input()->file('images', []) as $image)
+foreach($this->input()->file('images', [])->getInputItems() as $image)
 {
     if($image->getMime() === 'image/jpeg') 
     {
@@ -1279,10 +1279,10 @@ foreach(input()->file('images', []) as $image)
 
 ```php
 # Get all
-$values = input()->all();
+$values = $this->input()->all();
 
 # Only match specific keys
-$values = input()->all([
+$values = $this->input()->all([
     'company_name',
     'user_id'
 ]);
@@ -1296,10 +1296,12 @@ All object implements the `IInputItem` interface and will always contain these m
 - `setName()` - sets a human friendly name for the input (company_name will be Company Name etc).
 - `getValue()` - returns the value of the input.
 - `setValue()` - sets the value of the input.
+- `hasInputItems()` - returns true if the value is an associative array
+- `getInputItems()` - returns a collection of InputItems if the value is an associative array
 
 `InputFile` has the same methods as above along with some other file-specific methods like:
 
-- `getFilename` - get the filename.
+- `getFilename()` and `getValue()` - get the filename.
 - `getTmpName()` - get file temporary name.
 - `getSize()` - get file size.
 - `move($destination)` - move file to destination.
@@ -1319,12 +1321,12 @@ to filter on request-methods and supports both `string` and `array` as parameter
 **Example:**
 
 ```php
-if(input()->exists(['name', 'lastname'])) {
+if($this->input()->exists(['name', 'lastname'])) {
 	// Do stuff
 }
 
 /* Similar to code above */
-if(input()->exists('name') && input()->exists('lastname')) {
+if($this->input()->exists('name') && $this->input()->exists('lastname')) {
 	// Do stuff
 }
 ```
@@ -1340,24 +1342,24 @@ This section contains all available events that can be registered using the `Eve
 
 All event callbacks will retrieve a `EventArgument` object as parameter. This object contains easy access to event-name, router- and request instance and any special event-arguments related to the given event. You can see what special event arguments each event returns in the list below.  
 
-| Name                        | Special arguments | Description               | 
-| -------------               |-----------      | ----                      | 
-| `EVENT_ALL`                 | - | Fires when a event is triggered. |
-| `EVENT_INIT`                | - | Fires when router is initializing and before routes are loaded. |
-| `EVENT_LOAD`                | `loadedRoutes` | Fires when all routes has been loaded and rendered, just before the output is returned. |
-| `EVENT_ADD_ROUTE`           | `route`<br>`isSubRoute` | Fires when route is added to the router. `isSubRoute` is true when sub-route is rendered. |
-| `EVENT_REWRITE`             | `rewriteUrl`<br>`rewriteRoute` | Fires when a url-rewrite is and just before the routes are re-initialized. |
-| `EVENT_BOOT`                | `bootmanagers` | Fires when the router is booting. This happens just before boot-managers are rendered and before any routes has been loaded. |
-| `EVENT_RENDER_BOOTMANAGER`  | `bootmanagers`<br>`bootmanager` | Fires before a boot-manager is rendered. |
-| `EVENT_LOAD_ROUTES`         | `routes` | Fires when the router is about to load all routes. |
-| `EVENT_FIND_ROUTE`          | `name` | Fires whenever the `findRoute` method is called within the `Router`. This usually happens when the router tries to find routes that contains a certain url, usually after the `EventHandler::EVENT_GET_URL` event. |
-| `EVENT_GET_URL`             | `name`<br>`parameters`<br>`getParams` | Fires whenever the `SimpleRouter::getUrl` method or `url`-helper function is called and the router tries to find the route. |
-| `EVENT_MATCH_ROUTE`         | `route` | Fires when a route is matched and valid (correct request-type etc). and before the route is rendered. |
-| `EVENT_RENDER_ROUTE`        | `route` | Fires before a route is rendered. |
-| `EVENT_LOAD_EXCEPTIONS`     | `exception`<br>`exceptionHandlers` | Fires when the router is loading exception-handlers. |
-| `EVENT_RENDER_EXCEPTION`    | `exception`<br>`exceptionHandler`<br>`exceptionHandlers` | Fires before the router is rendering a exception-handler. |
-| `EVENT_RENDER_MIDDLEWARES`  | `route`<br>`middlewares` | Fires before middlewares for a route is rendered. |
-| `EVENT_RENDER_CSRF`         | `csrfVerifier` | Fires before the CSRF-verifier is rendered. |
+| Name                       | Special arguments                                        | Description                                                                                                                                                                                                        | 
+|----------------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| `EVENT_ALL`                | -                                                        | Fires when a event is triggered.                                                                                                                                                                                   |
+| `EVENT_INIT`               | -                                                        | Fires when router is initializing and before routes are loaded.                                                                                                                                                    |
+| `EVENT_LOAD`               | `loadedRoutes`                                           | Fires when all routes has been loaded and rendered, just before the output is returned.                                                                                                                            |
+| `EVENT_ADD_ROUTE`          | `route`<br>`isSubRoute`                                  | Fires when route is added to the router. `isSubRoute` is true when sub-route is rendered.                                                                                                                          |
+| `EVENT_REWRITE`            | `rewriteUrl`<br>`rewriteRoute`                           | Fires when a url-rewrite is and just before the routes are re-initialized.                                                                                                                                         |
+| `EVENT_BOOT`               | `bootmanagers`                                           | Fires when the router is booting. This happens just before boot-managers are rendered and before any routes has been loaded.                                                                                       |
+| `EVENT_RENDER_BOOTMANAGER` | `bootmanagers`<br>`bootmanager`                          | Fires before a boot-manager is rendered.                                                                                                                                                                           |
+| `EVENT_LOAD_ROUTES`        | `routes`                                                 | Fires when the router is about to load all routes.                                                                                                                                                                 |
+| `EVENT_FIND_ROUTE`         | `name`                                                   | Fires whenever the `findRoute` method is called within the `Router`. This usually happens when the router tries to find routes that contains a certain url, usually after the `EventHandler::EVENT_GET_URL` event. |
+| `EVENT_GET_URL`            | `name`<br>`parameters`<br>`getParams`                    | Fires whenever the `SimpleRouter::getUrl` method or `url`-helper function is called and the router tries to find the route.                                                                                        |
+| `EVENT_MATCH_ROUTE`        | `route`                                                  | Fires when a route is matched and valid (correct request-type etc). and before the route is rendered.                                                                                                              |
+| `EVENT_RENDER_ROUTE`       | `route`                                                  | Fires before a route is rendered.                                                                                                                                                                                  |
+| `EVENT_LOAD_EXCEPTIONS`    | `exception`<br>`exceptionHandlers`                       | Fires when the router is loading exception-handlers.                                                                                                                                                               |
+| `EVENT_RENDER_EXCEPTION`   | `exception`<br>`exceptionHandler`<br>`exceptionHandlers` | Fires before the router is rendering a exception-handler.                                                                                                                                                          |
+| `EVENT_RENDER_MIDDLEWARES` | `route`<br>`middlewares`                                 | Fires before middlewares for a route is rendered.                                                                                                                                                                  |
+| `EVENT_RENDER_CSRF`        | `csrfVerifier`                                           | Fires before the CSRF-verifier is rendered.                                                                                                                                                                        |
 
 ## Registering new event
 
