@@ -3,61 +3,57 @@
 namespace Pecee\Http\Input\Exceptions;
 
 use Exception;
-use Pecee\Http\Input\InputValidatorItem;
-use Pecee\Http\Input\InputValidatorRule;
+use Somnambulist\Components\Validation\Validation;
 use Throwable;
 
 class InputValidationException extends Exception
 {
 
     /**
-     * @var InputValidatorItem[] $errors
+     * @var Validation $validation
      */
-    private $errors;
+    private Validation $validation;
 
-    public function __construct($message, $errors = array(), $code = 0, Throwable $previous = null) {
-        $this->errors = $errors;
+    public function __construct($message, Validation $validation, $code = 0, Throwable $previous = null)
+    {
+        $this->validation = $validation;
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return InputValidatorItem[]
+     * @return Validation
      */
-    public function getErrors(): array{
-        return $this->errors;
+    public function getValidation(): Validation
+    {
+        return $this->validation;
     }
 
     /**
-     * @return InputValidatorRule[]|null
+     * @return array
      */
-    public function getErrorsForItem(string $key): ?array{
-        foreach($this->getErrors() as $item){
-            if($item->getKey() == $key)
-                return $item->getErrors();
-        }
-        return null;
+    public function getErrorMessages(): array
+    {
+        return $this->getValidation()->errors()->all();
     }
 
     /**
-     * @return array[]
+     * @param string $key
+     * @return array|null
      */
-    public function getErrorMessages(): array{
-        $messages = array();
-        foreach($this->getErrors() as $item){
-            $messages[$item->getKey()] = $item->getErrorMessages();
-        }
-        return $messages;
+    public function getErrorsForItem(string $key): ?array
+    {
+        $errors = $this->getValidation()->errors()->get($key);
+        if(empty($errors))
+            return null;
+        return $errors;
     }
 
     /**
      * @return string
      */
-    public function getDetailedMessage(): string{
-        $messages = array();
-        foreach($this->getErrors() as $item){
-            $messages[] = $item->getKey() . ': ' . join(', ', $item->getErrorMessages());
-        }
-        return 'Failed to validate inputs: ' . join('; ', $messages);
+    public function getDetailedMessage(): string
+    {
+        return 'Failed to validate inputs: ' . join('; ', $this->getErrorMessages());
     }
 
 }

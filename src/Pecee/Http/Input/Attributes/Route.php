@@ -34,14 +34,16 @@ class Route
     /**
      * @return string
      */
-    public function getMethod(): string{
+    public function getMethod(): string
+    {
         return $this->method;
     }
 
     /**
      * @return string
      */
-    public function getRoute(): string{
+    public function getRoute(): string
+    {
         return $this->route;
     }
 }

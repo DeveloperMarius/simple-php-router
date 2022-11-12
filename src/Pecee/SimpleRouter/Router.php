@@ -418,12 +418,12 @@ class Router
                         $routeAttributeValidator = InputValidator::parseValidatorFromRoute($this, $route);
                         $routeParameterValidator = InputValidator::parseValidatorFromRouteParameters($this, $route);
                         if($route->getInputValidator() !== null || $routeAttributeValidator !== null || $routeParameterValidator !== null){
-                            if($route->getInputValidator() !== null)
-                                $this->getRequest()->validate($route->getInputValidator());
-                            if($routeAttributeValidator !== null)
-                                $this->getRequest()->validate($routeAttributeValidator);
-                            if($routeParameterValidator !== null)
-                                $routeParameterValidator->validateData($route->getParameters());
+                            if($route->getInputValidator() !== null && $this->getRequest()->validate($route->getInputValidator())->fails())
+                                continue;
+                            if($routeAttributeValidator !== null && $this->getRequest()->validate($routeAttributeValidator)->fails())
+                                continue;
+                            if($routeParameterValidator !== null && $routeParameterValidator->validateData($route->getParameters())->fails())
+                                continue;
 
                             $output = $this->handleRouteRewrite($key, $url);
                             if($output !== null){

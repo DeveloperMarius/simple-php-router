@@ -2,14 +2,13 @@
 
 namespace Pecee\Http;
 
-use Pecee\Http\Exceptions\MalformedUrlException;
-use Pecee\Http\Input\IInputHandler;
 use Pecee\Http\Input\InputHandler;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\SimpleRouter\Route\ILoadableRoute;
 use Pecee\SimpleRouter\Route\RouteUrl;
 use Pecee\SimpleRouter\SimpleRouter;
+use Somnambulist\Components\Validation\Validation;
 
 class Request
 {
@@ -567,16 +566,16 @@ class Request
 
     /**
      * @param InputValidator|array $validator
-     * @return InputValidator
+     * @return Validation
      */
-    public function validate(InputValidator|array $validator): InputValidator{
+    public function validate(InputValidator|array $validator): Validation
+    {
         if(!$validator instanceof InputValidator){
             $tmp = InputValidator::make();
-            $tmp->parseSettings($validator);
+            $tmp->setRules($validator);
             $validator = $tmp;
         }
-        $validator->validate($this);
-        return $validator;
+        return $validator->validateRequest($this);
     }
 
     /**

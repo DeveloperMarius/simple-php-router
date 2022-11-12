@@ -10,7 +10,8 @@ use Attribute;
  * @since 8.0
  */
 #[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_FUNCTION|Attribute::TARGET_PROPERTY|Attribute::IS_REPEATABLE|Attribute::TARGET_PARAMETER)]
-class ValidatorAttribute{
+class ValidatorAttribute
+{
 
     /**
      * @param string|null $name
@@ -33,28 +34,32 @@ class ValidatorAttribute{
     /**
      * @return string|null
      */
-    public function getName(): ?string{
+    public function getName(): ?string
+    {
         return $this->name;
     }
 
     /**
      * @param string|null $name
      */
-    public function setName(?string $name): void{
+    public function setName(?string $name): void
+    {
         $this->name = $name;
     }
 
     /**
      * @return string|null
      */
-    public function getType(): ?string{
+    public function getType(): ?string
+    {
         return $this->type;
     }
 
     /**
      * @param string|null $type
      */
-    public function setType(?string $type): void{
+    public function setType(?string $type): void
+    {
         $this->type = $type;
         if($this->type !== null && str_starts_with($this->type, '?')){
             $this->type = substr($this->type, 1);
@@ -66,7 +71,8 @@ class ValidatorAttribute{
     /**
      * @return string|null
      */
-    public function getValidator(): ?string{
+    public function getValidator(): ?string
+    {
         return $this->validator;
     }
 
@@ -74,10 +80,10 @@ class ValidatorAttribute{
      * @param string $validator
      * @return void
      */
-    public function addValidator(string $validator){
+    public function addValidator(string $validator)
+    {
         if($this->validator !== null){
-            if(!str_contains($this->validator, $validator))
-                $this->validator .= '|' . $validator;
+            $this->validator .= '|' . $validator;
         }else{
             $this->validator = $validator;
         }
@@ -86,8 +92,13 @@ class ValidatorAttribute{
     /**
      * @return string
      */
-    public function getFullValidator(): string{
-        return $this->getType() !== null ? $this->getType() . ($this->getValidator() !== null ? '|' . $this->getValidator() : '') : ($this->getValidator() ?? '');
+    public function getFullValidator(): string
+    {
+        if($this->getValidator() === null || !str_contains($this->getValidator(), 'nullable'))
+            $this->addValidator('required');
+        if($this->getValidator() === null || ($this->getType() !== null && !str_contains($this->getValidator(), $this->getType())))
+            $this->addValidator($this->getType());
+        return $this->getValidator() ?? '';
     }
 
 }

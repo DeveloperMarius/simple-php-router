@@ -29,7 +29,7 @@ class DummyController
     #[
         Route(Route::POST, '/my/test/url'),
         ValidatorAttribute('fullname', 'string', 'min:5|max:20'),
-        ValidatorAttribute('company', 'string')
+        ValidatorAttribute('company', 'present|string')
     ]
     public function method4()
     {

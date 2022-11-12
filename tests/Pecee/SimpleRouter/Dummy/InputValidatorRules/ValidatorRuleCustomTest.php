@@ -2,26 +2,15 @@
 
 namespace Dummy\InputValidatorRules;
 
-use Pecee\Http\Input\IInputItem;
-use Pecee\Http\Input\InputValidatorRule;
+use Somnambulist\Components\Validation\Rule;
 
-class ValidatorRuleCustomTest extends InputValidatorRule{
+class ValidatorRuleCustomTest extends Rule{
 
-    protected $tag = 'customTest';
+    protected string $message = 'rule.custom_test';
 
-    /**
-     * @param IInputItem $inputItem
-     * @return bool
-     */
-    public function validate(IInputItem $inputItem): bool{
-        return $inputItem->getValue() == 'customValue';
-    }
-
-    /**
-     * @return string
-     */
-    public function getErrorMessage(): string{
-        return 'The input %s is not correct!';
+    public function check($value): bool
+    {
+        return $value === 'customValue';
     }
 
 }

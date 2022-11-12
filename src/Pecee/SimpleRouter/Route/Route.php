@@ -649,16 +649,16 @@ abstract class Route implements IRoute
      * Get InputValidator if one is present
      * @return InputValidator|array|null
      */
-    public function getInputValidator()
+    public function getInputValidator(): InputValidator|array|null
     {
         return $this->inputValidator;
     }
 
     /**
-     * @param InputValidator|array $validator
+     * @param array|InputValidator $validator
      * @return void
      */
-    public function validateInputs($validator)
+    public function validateInputs(array|InputValidator $validator)
     {
         $this->inputValidator = $validator;
     }

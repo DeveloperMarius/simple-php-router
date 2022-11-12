@@ -235,5 +235,5 @@ interface IRoute
      *
      * @return InputValidator|array|null
      */
-    public function getInputValidator();
+    public function getInputValidator(): InputValidator|array|null;
 }
