@@ -12,15 +12,16 @@ SimpleRouter::get('/', function() {
 });
 ```
 
-### Support the project
+### This is a fork
+This is a fork of the router which brings a lot of bugfixes and features.  
+Sadly the main project is no longer maintained.  
+We updated the project to require php 8!
+
+### Support the project (Initial maintainer)
 
 If you like simple-router and wish to see the continued development and maintenance of the project, please consider showing your support by buying me a coffee. Supporters will be listed under the credits section of this documentation.
 
 You can donate any amount of your choice by [clicking here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NNX4D2RUSALCN).
-
-### This is a fork
-This is a fork of the router which brings a lot of bugfixes and features.
-We updated the project to require php8.1!
 
 ## Table of Contents
 
@@ -56,6 +57,7 @@ We updated the project to require php8.1!
 	- [Form Method Spoofing](#form-method-spoofing)
 	- [Accessing The Current Route](#accessing-the-current-route)
 	- [Other examples](#other-examples)
+- [Validation](#validation)
 - [CSRF-protection](#csrf-protection)
 	- [Adding CSRF-verifier](#adding-csrf-verifier)
 	- [Getting CSRF-token](#getting-csrf-token)
@@ -121,11 +123,29 @@ ___
 
 # Getting started
 
-Add the latest version of the simple-router project running this command.
+I'm in contact with packagist to provide a composer repository, but while I'm doing that, please add the following to the `composer.json`:
+```
+"repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/developermarius/simple-php-router"
+    },
+    {
+      "type": "composer",
+      "url": "https://packagist.org"
+    }
+],
+"require": {
+    "php": ">=8.0",
+    "pecee/simple-router": "^5",
+}
+```
 
-```
-composer require pecee/simple-router
-```
+## Migrating from to the fork
+
+I completely reworked the InputHandler. Input parameters from the request body will no longer be found in the `$this->input()->post()` function but in the `$this->input()->data()` function. Watch out for the other changes.  
+The helper functions were moved into a trait. Take a look at the documentation.  
+If you have any further questions or found a bug, please create an issue or pull request.
 
 ## Notes
 
@@ -151,7 +171,7 @@ You can find the demo-project here: [https://github.com/skipperbent/simple-route
 
 ## Requirements
 
-- PHP 7.1 or greater (version 3.x and below supports PHP 5.5+)
+- PHP 8.0 or greater
 - PHP JSON extension enabled.
 
 ## Features
@@ -174,11 +194,7 @@ You can find the demo-project here: [https://github.com/skipperbent/simple-route
 
 ## Installation
 
-1. Navigate to your project folder in terminal and run the following command:
-
-```php
-composer require pecee/simple-router
-```
+1. Add the project to your `composer.json` as explained above.
 
 ### Setting up Nginx
 
@@ -307,96 +323,24 @@ SimpleRouter::start();
 
 We recommend that you add these helper functions to your project. These will allow you to access functionality of the router more easily.
 
-To implement the functions below, simply copy the code to a new file and require the file before initializing the router or copy the `helpers.php` we've included in this library.
-
+Just add the trait to your controller classes:
 ```php
-use Pecee\SimpleRouter\SimpleRouter as Router;
-use Pecee\Http\Url;
-use Pecee\Http\Response;
-use Pecee\Http\Request;
 
-/**
- * Get url for a route by using either name/alias, class or method name.
- *
- * The name parameter supports the following values:
- * - Route name
- * - Controller/resource name (with or without method)
- * - Controller class name
- *
- * When searching for controller/resource by name, you can use this syntax "route.name@method".
- * You can also use the same syntax when searching for a specific controller-class "MyController@home".
- * If no arguments is specified, it will return the url for the current loaded route.
- *
- * @param string|null $name
- * @param string|array|null $parameters
- * @param array|null $getParams
- * @return \Pecee\Http\Url
- * @throws \InvalidArgumentException
- */
-function url(?string $name = null, $parameters = null, ?array $getParams = null): Url
-{
-    return Router::getUrl($name, $parameters, $getParams);
-}
+class ArticleController{
 
-/**
- * @return \Pecee\Http\Response
- */
-function response(): Response
-{
-    return Router::response();
-}
-
-/**
- * @return \Pecee\Http\Request
- */
-function request(): Request
-{
-    return Router::request();
-}
-
-/**
- * Get input class
- * @param string|null $index Parameter index name
- * @param string|mixed|null $defaultValue Default return value
- * @param array ...$methods Default methods
- * @return \Pecee\Http\Input\InputHandler|array|string|null
- */
-function input($index = null, $defaultValue = null, ...$methods)
-{
-    if ($index !== null) {
-        return request()->getInputHandler()->value($index, $defaultValue, ...$methods);
+    use \Pecee\SimpleRouter\RouterUtils;
+    
+    public function create(){
+    	$data = $this->input()->values();
+    	
+    	[...]
     }
-
-    return request()->getInputHandler();
 }
 
-/**
- * @param string $url
- * @param int|null $code
- */
-function redirect(string $url, ?int $code = null): void
-{
-    if ($code !== null) {
-        response()->httpCode($code);
-    }
-
-    response()->redirect($url);
-}
-
-/**
- * Get current csrf-token
- * @return string|null
- */
-function csrf_token(): ?string
-{
-    $baseVerifier = Router::router()->getCsrfVerifier();
-    if ($baseVerifier !== null) {
-        return $baseVerifier->getTokenProvider()->getToken();
-    }
-
-    return null;
-}
 ```
+
+If you are not in a controller class, you can still access the InputHandler like this:  
+`SimpleRouter::request()->getInputHandler()->values();`
 
 ---
 
@@ -779,6 +723,83 @@ SimpleRouter::group(['middleware' => \Demo\Middlewares\Site::class, 'exceptionHa
 
 SimpleRouter::get('/page/404', 'ControllerPage@notFound', ['as' => 'page.notfound']);
 ```
+---
+
+# Validation
+
+By default the validation will throw `InputValidationException`. To disable this behavior use:
+`InputValidator::setThrowExceptions(false);`
+
+## Normal validation
+
+For all validation functionality we used the project [somnambulist-tech/validation](https://github.com/somnambulist-tech/validation). Big thanks to @dave-redfern!
+You can read his [documentation](https://github.com/somnambulist-tech/validation) for a more details.
+
+For our purpose we put his validation Factory into the wrapper function `InputValidator`. You can get started by:
+
+```php
+InputValidator::make()->setRules([
+	'title' => 'string|min:3|max:200',
+	'description' => 'string|min:20|max:500'
+])->validateData(array(
+	'title' => 'Example title',
+	'description' => 'This is an example description.'
+))->passes();
+```
+
+### Access the Factory
+
+You can easily access the Validation Factory to change the language or add a custom rule:  
+```php
+use \Pecee\Http\Input\InputValidator;
+
+InputValidator::getFactory()->messages()->default('de');
+InputValidator::getFactory()->addRule('example', new ExampleRule());
+```
+
+### Changes / differences
+
+- For the main purpose of input validation we always automatically add `required` to the rules if `nullable` is not present.
+
+## php attributes
+
+It is possible to enable the validation attribute parsing with `\Pecee\Http\Input\InputValidator::$parseAttributes = true;`.
+This helps to increase performance to those, who don't want to use the attributes for validation.
+
+### Routes
+
+It is possible to use ValidatorAttributes in the Controller classes. Just add the php8 attribute above the function and all inputs defined will be validated & type cast to the defined type.  
+With `$this->input()->requireAttributeValues()` you can then receive all defined input parameters in the attributes.  
+Info: Routes will not be rendered when the validation fails.
+
+You can also add ValidatorAttributes to the parameters passed threw the routes. This can be useful when you create a custom rule that for example checks if the object exists in your database (Not included in this project).
+The parameter name and type will automatically detected, if defined. Please either define the php type or pass the type using the constructor of the attribute
+
+```php
+use Pecee\Http\Input\Attributes\ValidatorAttribute;
+
+#[
+	ValidatorAttribute('title', 'string', 'min:3|max:200'),
+	ValidatorAttribute('description', 'string', 'min:20|max:500'),
+]
+public function createArticle(#[ValidatorAttribute(validator: 'model:User')] int $user){
+	$data = $this->input()->requireAttributeValues();
+}
+```
+
+## Route function `validateInputs()`
+
+Instead of using the php attributes, you can also add the validation to the route using the `validateInputs()` function.
+
+```php
+TestRouter::get('/my/test/url', 'ArticleController@createArticle')
+	->validateInputs([
+		'title' => 'string|min:3|max:200',
+		'description' => 'string|min:20|max:500'
+	]);
+```
+
+It is also possible to pass a InputValidator instance and take advantage of the `rewriteCallbackOnFailure()` function of the InputValidator objects.
 
 ---
 
@@ -1219,6 +1240,12 @@ This example matches both POST and GET request-methods and if name is empty the 
 $name = $this->input('name', 'Guest', 'post', 'get');
 ```
 
+### Get multiple parameter values
+
+```$this->input()->values($filter = array());```
+
+To receive all input values you can leave the filter empty. If you only want specific inputs, you can pass their keys.
+
 ### Get parameter object
 
 When dealing with file-uploads it can be useful to retrieve the raw parameter object.
@@ -1245,6 +1272,14 @@ The example below will return an `InputItem` object if the parameter was found o
 
 ```php
 $object = $this->input()->post($index, $defaultValue = null);
+```
+
+**Getting specific request body parameter as `InputItem` object:**
+
+The example below will return an `InputItem` object if the parameter was found or an `InputItem` with the `$defaultValue`.
+
+```php
+$object = $this->input()->data($index, $defaultValue = null);
 ```
 
 **Getting specific `$_FILE` parameter as `InputFile` object:**
@@ -1898,11 +1933,11 @@ public function testUnicodeCharacters()
 Depending on your test, you can use the methods below when rendering routes in your unit-tests.
 
 
-| Method        | Description  |
-| ------------- |-------------|
-| ```TestRouter::debug($url, $method)``` | Will render the route without returning anything. Exceptions will be thrown and the router will be reset automatically. |
-| ```TestRouter::debugOutput($url, $method)``` | Will render the route and return any value that the route might output. Manual reset required by calling `TestRouter::router()->reset()`. |
-| ```TestRouter::debugNoReset($url, $method);```  | Will render the route without resetting the router. Useful if you need to get loaded route, parameters etc. from the router. Manual reset required by calling `TestRouter::router()->reset()`. |
+| Method                                         | Description                                                                                                                                                                                    |
+|------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ```TestRouter::debug($url, $method)```         | Will render the route without returning anything. Exceptions will be thrown and the router will be reset automatically.                                                                        |
+| ```TestRouter::debugOutput($url, $method)```   | Will render the route and return any value that the route might output. Manual reset required by calling `TestRouter::router()->reset()`.                                                      |
+| ```TestRouter::debugNoReset($url, $method);``` | Will render the route without resetting the router. Useful if you need to get loaded route, parameters etc. from the router. Manual reset required by calling `TestRouter::router()->reset()`. |
 
 ### Debug information
 
@@ -1922,20 +1957,20 @@ exit;
 
 **The example above will provide you with an output containing:**
 
-| Key               | Description  |
-| -------------     |------------- |
-| `url`             | The parsed request-uri. This url should match the url in the browser.|
-| `method`          | The browsers request method (example: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` etc).|
-| `host`            | The website host (example: `domain.com`).|
-| `loaded_routes`   | List of all the routes that matched the `url` and that has been rendered/loaded. |
-| `all_routes`      | All available routes |
-| `boot_managers`   | All available BootManagers |
-| `csrf_verifier`   | CsrfVerifier class |
-| `log`             | List of debug messages/log from the router. |
-| `router_output`   | The rendered callback output from the router. |
-| `library_version` | The version of simple-php-router you are using. |
-| `php_version`     | The version of PHP you are using. |
-| `server_params`   | List of all `$_SERVER` variables/headers. | 
+| Key                | Description                                                                         |
+|--------------------|-------------------------------------------------------------------------------------|
+| `url`              | The parsed request-uri. This url should match the url in the browser.               |
+| `method`           | The browsers request method (example: `GET`, `POST`, `PUT`, `PATCH`, `DELETE` etc). |
+| `host`             | The website host (example: `domain.com`).                                           |
+| `loaded_routes`    | List of all the routes that matched the `url` and that has been rendered/loaded.    |
+| `all_routes`       | All available routes                                                                |
+| `boot_managers`    | All available BootManagers                                                          |
+| `csrf_verifier`    | CsrfVerifier class                                                                  |
+| `log`              | List of debug messages/log from the router.                                         |
+| `router_output`    | The rendered callback output from the router.                                       |
+| `library_version`  | The version of simple-php-router you are using.                                     |
+| `php_version`      | The version of PHP you are using.                                                   |
+| `server_params`    | List of all `$_SERVER` variables/headers.                                           | 
 
 #### Benchmark and logging
 
@@ -2021,6 +2056,10 @@ public function show($username) {
 Remember that a more detailed issue- description and debug-info might suck to write, but it will help others understand- and resolve your issue without asking for the information.
 
 **Note:** please be as detailed as possible in the description when creating a new issue. This will help others to more easily understand- and solve your issue. Providing the necessary steps to reproduce the error within your description, adding useful debugging info etc. will help others quickly resolve the issue you are reporting.
+
+## Known Bugs
+
+- Domain parameters are always appended at the end of the parameters passed to functions. (Ignores `$parameterReverseOrder`)
 
 ## Feedback and development
 
