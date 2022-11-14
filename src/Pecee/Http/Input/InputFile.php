@@ -326,7 +326,7 @@ class InputFile implements IInputItem, IteratorAggregate
      */
     public function hasInputItems(): bool
     {
-        return is_array($this->value) && array_keys($this->value) !== range(0, count($this->value) - 1);
+        return is_array($this->value);
     }
 
     /**

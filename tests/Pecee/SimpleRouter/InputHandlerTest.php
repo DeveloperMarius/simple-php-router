@@ -197,7 +197,7 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
         $inputHandler = TestRouter::request()->getInputHandler();
 
         $files = $inputHandler->file('my_files');
-        $this->assertCount(5, $files);
+        $this->assertCount(5, $files->getInputItems());
 
         /* @var $file InputFile */
         foreach ($files as $key => $file) {
