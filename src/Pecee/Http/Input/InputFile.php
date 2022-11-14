@@ -5,6 +5,8 @@ namespace Pecee\Http\Input;
 use ArrayIterator;
 use IteratorAggregate;
 use Pecee\Exceptions\InvalidArgumentException;
+use Pecee\Http\Input\Exceptions\InputValidationException;
+use Somnambulist\Components\Validation\Validation;
 
 class InputFile implements IInputItem, IteratorAggregate
 {
@@ -354,6 +356,15 @@ class InputFile implements IInputItem, IteratorAggregate
         }
 
         return $this;
+    }
+
+    /**
+     * @param string|array $rules
+     * @return Validation
+     * @throws InputValidationException
+     */
+    public function validate(string|array $rules): Validation{
+        return InputValidator::make()->validateItem($this, $rules);
     }
 
     public function toArray(): array

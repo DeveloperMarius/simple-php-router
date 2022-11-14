@@ -131,6 +131,7 @@ class InputValidator
     /**
      * @param InputHandler $inputHandler
      * @return Validation
+     * @throws InputValidationException
      */
     public function validateInputs(InputHandler $inputHandler): Validation
     {
@@ -140,6 +141,7 @@ class InputValidator
     /**
      * @param Request $request
      * @return Validation
+     * @throws InputValidationException
      */
     public function validateRequest(Request $request): Validation
     {
@@ -149,6 +151,7 @@ class InputValidator
     /**
      * @param InputHandler $inputHandler
      * @return Validation
+     * @throws InputValidationException
      */
     private function validateItems(InputHandler $inputHandler): Validation
     {
@@ -160,8 +163,28 @@ class InputValidator
     }
 
     /**
+     * @param InputItem|InputFile $inputItem
+     * @param string|array $rules
+     * @return Validation
+     * @throws InputValidationException
+     */
+    public function validateItem(InputItem|InputFile $inputItem, string|array $rules): Validation
+    {
+        $validation = self::getFactory()->validate(array(
+            $inputItem->getName() => $inputItem->getValue()
+        ), array(
+            $inputItem->getName() => $rules
+        ));
+        if ($validation->fails() && self::isThrowExceptions()) {
+            throw new InputValidationException('Failed to validate input', $validation);
+        }
+        return $validation;
+    }
+
+    /**
      * @param array $data
      * @return Validation
+     * @throws InputValidationException
      */
     public function validateData(array $data): Validation
     {

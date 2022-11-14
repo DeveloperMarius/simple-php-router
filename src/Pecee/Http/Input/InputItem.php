@@ -5,6 +5,8 @@ namespace Pecee\Http\Input;
 //use ArrayAccess;
 use ArrayIterator;
 use IteratorAggregate;
+use Pecee\Http\Input\Exceptions\InputValidationException;
+use Somnambulist\Components\Validation\Validation;
 
 class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
 {
@@ -20,13 +22,13 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     /**
      * @var mixed|null $value
      */
-    public $value;
+    public mixed $value;
 
     /**
      * @param string $index
      * @param mixed|null $value
      */
-    public function __construct(string $index, $value = null)
+    public function __construct(string $index, mixed $value = null)
     {
         $this->index = $index;
         $this->value = $value;
@@ -141,6 +143,15 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      */
     public function parser(): InputParser{
         return new InputParser($this);
+    }
+
+    /**
+     * @param string|array $rules
+     * @return Validation
+     * @throws InputValidationException
+     */
+    public function validate(string|array $rules): Validation{
+        return InputValidator::make()->validateItem($this, $rules);
     }
 
     //TODO integrate into php 8 update
