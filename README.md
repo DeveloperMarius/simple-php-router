@@ -125,7 +125,7 @@ ___
 
 Add the latest version of the simple-router project running this command.
 ```
-composer require developermarius/simple-php-router
+composer require developermarius/simple-router
 ```
 
 ## Migrating from to the fork
@@ -183,7 +183,7 @@ You can find the demo-project here: [https://github.com/skipperbent/simple-route
 
 1. Navigate to your project folder in terminal and run the following command:
 ```
-composer require developermarius/simple-php-router
+composer require developermarius/simple-router
 ```
 
 ### Setting up Nginx
