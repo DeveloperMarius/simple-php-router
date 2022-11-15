@@ -306,7 +306,7 @@ abstract class Route implements IRoute
             return $this->callback[1];
         }
 
-        if (is_string($this->callback) === true && strpos($this->callback, '@') !== false) {
+        if (is_string($this->callback) === true && str_contains($this->callback, '@')) {
             $tmp = explode('@', $this->callback);
 
             return $tmp[1];
@@ -321,7 +321,7 @@ abstract class Route implements IRoute
             return $this->callback[0];
         }
 
-        if (is_string($this->callback) === true && strpos($this->callback, '@') !== false) {
+        if (is_string($this->callback) === true && str_contains($this->callback, '@')) {
             $tmp = explode('@', $this->callback);
 
             return $tmp[0];
