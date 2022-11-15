@@ -21,7 +21,7 @@ interface IGroupRoute extends IRoute
      * @param IExceptionHandler|string $handler
      * @return static
      */
-    public function addExceptionHandler($handler): self;
+    public function addExceptionHandler(IExceptionHandler|string $handler): static;
 
     /**
      * Set exception-handlers for group
@@ -29,7 +29,7 @@ interface IGroupRoute extends IRoute
      * @param array $handlers
      * @return static
      */
-    public function setExceptionHandlers(array $handlers): self;
+    public function setExceptionHandlers(array $handlers): static;
 
     /**
      * Returns true if group should overwrite existing exception-handlers.
@@ -44,7 +44,7 @@ interface IGroupRoute extends IRoute
      * @param bool $merge
      * @return static
      */
-    public function setMergeExceptionHandlers(bool $merge): self;
+    public function setMergeExceptionHandlers(bool $merge): static;
 
     /**
      * Get exception-handlers for group
@@ -66,7 +66,7 @@ interface IGroupRoute extends IRoute
      * @param array $domains
      * @return static
      */
-    public function setDomains(array $domains): self;
+    public function setDomains(array $domains): static;
 
     /**
      * Prepends prefix while ensuring that the url has the correct formatting.
@@ -74,7 +74,7 @@ interface IGroupRoute extends IRoute
      * @param string $url
      * @return static
      */
-    public function prependPrefix(string $url): self;
+    public function prependPrefix(string $url): static;
 
     /**
      * Set prefix that child-routes will inherit.
@@ -82,7 +82,7 @@ interface IGroupRoute extends IRoute
      * @param string $prefix
      * @return static
      */
-    public function setPrefix(string $prefix): self;
+    public function setPrefix(string $prefix): static;
 
     /**
      * Get prefix.

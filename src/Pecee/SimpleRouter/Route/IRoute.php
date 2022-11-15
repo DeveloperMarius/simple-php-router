@@ -2,6 +2,7 @@
 
 namespace Pecee\SimpleRouter\Route;
 
+use Closure;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\Exceptions\NotFoundHttpException;
@@ -84,15 +85,15 @@ interface IRoute
     /**
      * Set callback
      *
-     * @param string|array|\Closure $callback
+     * @param array|Closure|string $callback
      * @return static
      */
-    public function setCallback($callback): self;
+    public function setCallback(array|Closure|string $callback): self;
 
     /**
-     * @return string|callable
+     * @return string|array|callable|null
      */
-    public function getCallback();
+    public function getCallback(): callable|array|string|null;
 
     /**
      * Return active method

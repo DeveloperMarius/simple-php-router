@@ -57,7 +57,7 @@ class RouteResource extends LoadableRoute implements IControllerRoute
         }
 
         /* Remove method/type */
-        if (strpos($name, '.') !== false) {
+        if (str_contains($name, '.')) {
             $name = substr($name, 0, strrpos($name, '.'));
         }
 
@@ -70,7 +70,7 @@ class RouteResource extends LoadableRoute implements IControllerRoute
      * @param string|null $name
      * @return string
      */
-    public function findUrl(?string $method = null, $parameters = null, ?string $name = null): string
+    public function findUrl(?string $method = null, array|string $parameters = null, ?string $name = null): string
     {
         $url = array_search($name, $this->names, true);
         if ($url !== false) {

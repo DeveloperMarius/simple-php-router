@@ -3,7 +3,7 @@ namespace MyNamespace;
 
 class NSController {
 
-    public function method()
+    public function method(): bool
     {
         return true;
     }

@@ -2,7 +2,8 @@
 
 namespace Pecee\Http\Input;
 
-class InputParser{
+class InputParser
+{
 
     /**
      * @var InputItem $inputItem
@@ -29,7 +30,8 @@ class InputParser{
      * @param callable|string $setting
      * @return self
      */
-    public function parseFromSetting(callable|string $setting): self{
+    public function parseFromSetting(callable|string $setting): self
+    {
         if(is_callable($setting)){
             $this->setValue($setting($this->getInputItem()));
         }else{
@@ -74,7 +76,7 @@ class InputParser{
      * @param mixed $value
      * @return self
      */
-    private function setValue($value): self
+    private function setValue(mixed $value): self
     {
         $this->getInputItem()->setValue($value);
         return $this;

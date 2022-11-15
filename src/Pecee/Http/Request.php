@@ -2,6 +2,8 @@
 
 namespace Pecee\Http;
 
+use Closure;
+use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputHandler;
 use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
@@ -152,7 +154,7 @@ class Request
     /**
      * @return void
      */
-    public function fetch()
+    public function fetch(): void
     {
         $this->inputFetched = true;
         $this->inputHandler = new InputHandler($this);
@@ -297,18 +299,18 @@ class Request
      * Get header value by name
      *
      * @param string $name Name of the header.
-     * @param string|mixed|null $defaultValue Value to be returned if header is not found.
+     * @param mixed $defaultValue Value to be returned if header is not found.
      * @param bool $tryParse When enabled the method will try to find the header from both from client (http) and server-side variants, if the header is not found.
      *
      * @return string|null
      */
-    public function getHeader(string $name, $defaultValue = null, bool $tryParse = true): ?string
+    public function getHeader(string $name, mixed $defaultValue = null, bool $tryParse = true): ?string
     {
         $name = strtolower($name);
         $header = $this->headers[$name] ?? null;
 
         if ($tryParse === true && $header === null) {
-            if (strpos($name, 'http-') === 0) {
+            if (str_starts_with($name, 'http-')) {
                 // Trying to find client header variant which was not found, searching for header variant without http- prefix.
                 $header = $this->headers[str_replace('http-', '', $name)] ?? null;
             } else {
@@ -324,10 +326,10 @@ class Request
      * Will try to find first header from list of headers.
      *
      * @param array $headers
-     * @param mixed|null $defaultValue
+     * @param mixed $defaultValue
      * @return mixed|null
      */
-    public function getFirstHeader(array $headers, $defaultValue = null)
+    public function getFirstHeader(array $headers, mixed $defaultValue = null): mixed
     {
         foreach($headers as $header) {
             $header = $this->getHeader($header);
@@ -501,10 +503,10 @@ class Request
 
     /**
      * Set rewrite callback
-     * @param string|\Closure $callback
+     * @param Closure|string $callback
      * @return static
      */
-    public function setRewriteCallback($callback): self
+    public function setRewriteCallback(Closure|string $callback): self
     {
         $this->hasPendingRewrite = true;
 
@@ -567,6 +569,7 @@ class Request
     /**
      * @param InputValidator|array $validator
      * @return Validation
+     * @throws InputValidationException
      */
     public function validate(InputValidator|array $validator): Validation
     {
@@ -590,17 +593,17 @@ class Request
         return $this;
     }
 
-    public function __isset($name): bool
+    public function __isset(int|string $name): bool
     {
         return array_key_exists($name, $this->data) === true;
     }
 
-    public function __set($name, $value = null)
+    public function __set(int|string $name, mixed $value = null)
     {
         $this->data[$name] = $value;
     }
 
-    public function __get($name)
+    public function __get(int|string $name)
     {
         return $this->data[$name] ?? null;
     }

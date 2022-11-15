@@ -219,7 +219,7 @@ class Url implements JsonSerializable
 
     /**
      * Get path from url
-     * @return string
+     * @return string|null
      */
     public function getPath(): ?string
     {

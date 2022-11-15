@@ -19,7 +19,7 @@ interface IClassLoader
      * @param array $parameters
      * @return mixed
      */
-    public function loadClassMethod(object $class, string $method, array $parameters);
+    public function loadClassMethod(object $class, string $method, array $parameters): mixed;
 
     /**
      * Called when loading method
@@ -28,6 +28,6 @@ interface IClassLoader
      * @param array $parameters
      * @return mixed
      */
-    public function loadClosure(Callable $closure, array $parameters);
+    public function loadClosure(Callable $closure, array $parameters): mixed;
 
 }

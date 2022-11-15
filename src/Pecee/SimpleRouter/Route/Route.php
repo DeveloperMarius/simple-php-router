@@ -51,7 +51,7 @@ abstract class Route implements IRoute
     /**
      * @var InputValidator|array|null
      */
-    protected $inputValidator = null;
+    protected InputValidator|array|null $inputValidator = null;
 
     /**
      * Render route
@@ -120,9 +120,9 @@ abstract class Route implements IRoute
         return $router->getClassLoader()->loadClassMethod($class, $method, $parameters);
     }
 
-    protected function parseParameters($route, $url, $parameterRegex = null): ?array
+    protected function parseParameters(string $route, string $url, string $parameterRegex = null): ?array
     {
-        $regex = (strpos($route, $this->paramModifiers[0]) === false) ? null :
+        $regex = (!str_contains($route, $this->paramModifiers[0])) ? null :
             sprintf
             (
                 static::PARAMETERS_REGEX_FORMAT,
@@ -203,7 +203,7 @@ abstract class Route implements IRoute
      */
     public function getIdentifier(): string
     {
-        if (is_string($this->callback) === true && strpos($this->callback, '@') !== false) {
+        if (is_string($this->callback) === true && str_contains($this->callback, '@')) {
             return $this->callback;
         }
 
@@ -282,10 +282,10 @@ abstract class Route implements IRoute
     /**
      * Set callback
      *
-     * @param string|array|Closure $callback
+     * @param array|Closure|string $callback
      * @return static
      */
-    public function setCallback($callback): IRoute
+    public function setCallback(array|Closure|string $callback): IRoute
     {
         $this->callback = $callback;
 
@@ -293,9 +293,9 @@ abstract class Route implements IRoute
     }
 
     /**
-     * @return string|callable|null
+     * @return string|callable|array|null
      */
-    public function getCallback()
+    public function getCallback(): callable|array|string|null
     {
         return $this->callback;
     }
@@ -503,7 +503,7 @@ abstract class Route implements IRoute
      * @return static
      * @see LoadableRoute::where()
      */
-    public function where(array $options)
+    public function where(array $options): static
     {
         return $this->setWhere($options);
     }
@@ -658,7 +658,7 @@ abstract class Route implements IRoute
      * @param array|InputValidator $validator
      * @return void
      */
-    public function validateInputs(array|InputValidator $validator)
+    public function validateInputs(array|InputValidator $validator): void
     {
         $this->inputValidator = $validator;
     }

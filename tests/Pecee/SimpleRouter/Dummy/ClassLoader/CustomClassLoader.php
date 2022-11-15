@@ -14,12 +14,12 @@ class CustomClassLoader implements \Pecee\SimpleRouter\ClassLoader\IClassLoader
      * @param array $parameters
      * @return mixed
      */
-    public function loadClassMethod(object $class, string $method, array $parameters)
+    public function loadClassMethod(object $class, string $method, array $parameters): mixed
     {
         return call_user_func_array([$class, $method], [true]);
     }
 
-    public function loadClosure(callable $closure, array $parameters)
+    public function loadClosure(callable $closure, array $parameters): mixed
     {
         return call_user_func_array($closure, [true]);
     }

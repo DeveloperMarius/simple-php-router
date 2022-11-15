@@ -268,7 +268,7 @@ class InputValidator
      * @param IRoute|null $route
      * @return ReflectionFunction|ReflectionMethod|null
      */
-    public static function getReflection(Router $router, ?IRoute $route = null)
+    public static function getReflection(Router $router, ?IRoute $route = null): ReflectionMethod|ReflectionFunction|null
     {
         $reflectionMethod = null;
         if($route === null){

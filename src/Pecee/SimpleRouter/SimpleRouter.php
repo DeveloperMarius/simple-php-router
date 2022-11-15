@@ -200,7 +200,7 @@ class SimpleRouter
      *
      * @return RouteUrl|IRoute
      */
-    public static function get(string $url, $callback, array $settings = null): IRoute
+    public static function get(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_GET], $url, $callback, $settings);
     }
@@ -213,7 +213,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function post(string $url, $callback, array $settings = null): IRoute
+    public static function post(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_POST], $url, $callback, $settings);
     }
@@ -226,7 +226,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function put(string $url, $callback, array $settings = null): IRoute
+    public static function put(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_PUT], $url, $callback, $settings);
     }
@@ -239,7 +239,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function patch(string $url, $callback, array $settings = null): IRoute
+    public static function patch(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_PATCH], $url, $callback, $settings);
     }
@@ -252,7 +252,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function options(string $url, $callback, array $settings = null): IRoute
+    public static function options(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_OPTIONS], $url, $callback, $settings);
     }
@@ -265,7 +265,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function delete(string $url, $callback, array $settings = null): IRoute
+    public static function delete(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([Request::REQUEST_TYPE_DELETE], $url, $callback, $settings);
     }
@@ -275,10 +275,10 @@ class SimpleRouter
      *
      * @param array $settings
      * @param Closure $callback
-     * @return RouteGroup|IGroupRoute
+     * @return RouteGroup
      * @throws InvalidArgumentException
      */
-    public static function group(array $settings, Closure $callback): IGroupRoute
+    public static function group(array $settings, Closure $callback): RouteGroup
     {
         $group = new RouteGroup();
         $group->setCallback($callback);
@@ -296,10 +296,10 @@ class SimpleRouter
      * @param string $url
      * @param Closure $callback
      * @param array $settings
-     * @return RoutePartialGroup|IPartialGroupRoute
+     * @return RoutePartialGroup
      * @throws InvalidArgumentException
      */
-    public static function partialGroup(string $url, Closure $callback, array $settings = []): IPartialGroupRoute
+    public static function partialGroup(string $url, Closure $callback, array $settings = []): RoutePartialGroup
     {
         $settings['prefix'] = $url;
 
@@ -321,7 +321,7 @@ class SimpleRouter
      * @return RouteUrl|IRoute
      * @see SimpleRouter::form
      */
-    public static function basic(string $url, $callback, array $settings = null): IRoute
+    public static function basic(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::form($url, $callback, $settings);
     }
@@ -336,7 +336,7 @@ class SimpleRouter
      * @return RouteUrl|IRoute
      * @see SimpleRouter::form
      */
-    public static function form(string $url, $callback, array $settings = null): IRoute
+    public static function form(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         return static::match([
             Request::REQUEST_TYPE_GET,
@@ -353,7 +353,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function match(array $requestMethods, string $url, $callback, array $settings = null): IRoute
+    public static function match(array $requestMethods, string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         $route = new RouteUrl($url, $callback);
         $route->setRequestMethods($requestMethods);
@@ -373,7 +373,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteUrl|IRoute
      */
-    public static function all(string $url, $callback, array $settings = null): IRoute
+    public static function all(string $url, $callback, array $settings = null): IRoute|RouteUrl
     {
         $route = new RouteUrl($url, $callback);
 
@@ -392,7 +392,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteController|IRoute
      */
-    public static function controller(string $url, string $controller, array $settings = null): IRoute
+    public static function controller(string $url, string $controller, array $settings = null): IRoute|RouteController
     {
         $route = new RouteController($url, $controller);
 
@@ -411,7 +411,7 @@ class SimpleRouter
      * @param array|null $settings
      * @return RouteResource|IRoute
      */
-    public static function resource(string $url, string $controller, array $settings = null): IRoute
+    public static function resource(string $url, string $controller, array $settings = null): IRoute|RouteResource
     {
         $route = new RouteResource($url, $controller);
 
@@ -450,11 +450,11 @@ class SimpleRouter
      * If no arguments is specified, it will return the url for the current loaded route.
      *
      * @param string|null $name
-     * @param string|array|null $parameters
+     * @param array|string|null $parameters
      * @param array|null $getParams
      * @return Url
      */
-    public static function getUrl(?string $name = null, $parameters = null, ?array $getParams = null): Url
+    public static function getUrl(?string $name = null, array|string $parameters = null, ?array $getParams = null): Url
     {
         try {
             return static::router()->getUrl($name, $parameters, $getParams);
@@ -507,7 +507,7 @@ class SimpleRouter
      * @param ILoadableRoute|IRoute $route
      * @return IRoute
      */
-    public static function addDefaultNamespace(IRoute $route): IRoute
+    public static function addDefaultNamespace(IRoute|ILoadableRoute $route): IRoute
     {
         if (static::$defaultNamespace !== null) {
             $route->setNamespace(static::$defaultNamespace);

@@ -90,10 +90,10 @@ class RouteGroup extends Route implements IGroupRoute
     /**
      * Add exception handler
      *
-     * @param IExceptionHandler|string $handler
+     * @param string|IExceptionHandler $handler
      * @return static
      */
-    public function addExceptionHandler($handler): IGroupRoute
+    public function addExceptionHandler(IExceptionHandler|string $handler): static
     {
         $this->exceptionHandlers[] = $handler;
 
@@ -106,7 +106,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param array $handlers
      * @return static
      */
-    public function setExceptionHandlers(array $handlers): IGroupRoute
+    public function setExceptionHandlers(array $handlers): static
     {
         $this->exceptionHandlers = $handlers;
 
@@ -139,7 +139,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param array $domains
      * @return static
      */
-    public function setDomains(array $domains): IGroupRoute
+    public function setDomains(array $domains): static
     {
         $this->domains = $domains;
 
@@ -150,7 +150,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param string $prefix
      * @return static
      */
-    public function setPrefix(string $prefix): IGroupRoute
+    public function setPrefix(string $prefix): static
     {
         $this->prefix = '/' . trim($prefix, '/');
 
@@ -163,7 +163,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param string $url
      * @return static
      */
-    public function prependPrefix(string $url): IGroupRoute
+    public function prependPrefix(string $url): static
     {
         return $this->setPrefix(rtrim($url, '/') . ($this->getPrefix() ?? ''));
     }
@@ -181,7 +181,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param string $name
      * @return static
      */
-    public function setName(string $name): IGroupRoute
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -204,7 +204,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param bool $merge
      * @return static
      */
-    public function setMergeExceptionHandlers(bool $merge): IGroupRoute
+    public function setMergeExceptionHandlers(bool $merge): static
     {
         $this->mergeExceptionHandlers = $merge;
 
@@ -228,7 +228,7 @@ class RouteGroup extends Route implements IGroupRoute
      * @param bool $merge
      * @return static
      */
-    public function setSettings(array $settings, bool $merge = false): IRoute
+    public function setSettings(array $settings, bool $merge = false): static
     {
         if (isset($settings['prefix']) === true) {
             $this->setPrefix($settings['prefix'] . ($this->getPrefix() ?? ''));

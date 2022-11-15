@@ -783,7 +783,7 @@ class Router
      * @param array $bootManagers
      * @return static
      */
-    public function setBootManagers(array $bootManagers): self
+    public function setBootManagers(array $bootManagers): static
     {
         $this->bootManagers = $bootManagers;
 
@@ -796,7 +796,7 @@ class Router
      * @param IRouterBootManager $bootManager
      * @return static
      */
-    public function addBootManager(IRouterBootManager $bootManager): self
+    public function addBootManager(IRouterBootManager $bootManager): static
     {
         $this->bootManagers[] = $bootManager;
 
@@ -861,7 +861,7 @@ class Router
 
     /**
      * Get csrf verifier class
-     * @return BaseCsrfVerifier
+     * @return BaseCsrfVerifier|null
      */
     public function getCsrfVerifier(): ?BaseCsrfVerifier
     {

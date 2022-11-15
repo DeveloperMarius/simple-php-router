@@ -271,7 +271,7 @@ class InputHandler implements IInputHandler
      * @param string|array ...$methods - Strings or one array of methods
      * @return InputItem|InputFile
      */
-    public function find(string $index, mixed $defaultValue = null, ...$methods)
+    public function find(string $index, mixed $defaultValue = null, ...$methods): InputFile|InputItem
     {
         $element = new InputItem($index, $defaultValue);
 
@@ -301,11 +301,11 @@ class InputHandler implements IInputHandler
      * Get input element value matching index
      *
      * @param string $index
-     * @param mixed $defaultValue
+     * @param mixed|null $defaultValue
      * @param string|array ...$methods
      * @return mixed
      */
-    public function value(string $index, mixed $defaultValue = null, ...$methods)
+    public function value(string $index, mixed $defaultValue = null, ...$methods): mixed
     {
         $input = $this->find($index, $defaultValue, ...$methods);
 

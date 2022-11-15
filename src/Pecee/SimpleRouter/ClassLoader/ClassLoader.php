@@ -29,7 +29,7 @@ class ClassLoader implements IClassLoader
      * @param array $parameters
      * @return mixed
      */
-    public function loadClassMethod(object $class, string $method, array $parameters)
+    public function loadClassMethod(object $class, string $method, array $parameters): mixed
     {
         return call_user_func_array([$class, $method], array_values($parameters));
     }
@@ -41,7 +41,7 @@ class ClassLoader implements IClassLoader
      * @param array $parameters
      * @return mixed
      */
-    public function loadClosure(Callable $closure, array $parameters)
+    public function loadClosure(Callable $closure, array $parameters): mixed
     {
         return call_user_func_array($closure, array_values($parameters));
     }

@@ -2,16 +2,18 @@
 
 namespace Pecee\Http\Input;
 
-interface IInputHandler{
+interface IInputHandler
+{
 
     public function parseInputs(): void;
 
     /**
      * @param string $index
+     * @param mixed|null $defaultValue
      * @param string|array ...$methods
      * @return InputItem|InputFile
      */
-    public function find(string $index, ...$methods);
+    public function find(string $index, mixed $defaultValue = null, ...$methods): InputFile|InputItem;
 
     /**
      * @param string $index
@@ -19,7 +21,7 @@ interface IInputHandler{
      * @param string|array ...$methods
      * @return mixed
      */
-    public function value(string $index, $defaultValue = null, ...$methods);
+    public function value(string $index, mixed $defaultValue = null, ...$methods): mixed;
 
     /**
      * @param string $index
@@ -33,28 +35,28 @@ interface IInputHandler{
      * @param mixed $defaultValue
      * @return InputItem
      */
-    public function post(string $index, $defaultValue = null): InputItem;
+    public function post(string $index, mixed $defaultValue = null): InputItem;
 
     /**
      * @param string $index
      * @param mixed $defaultValue
      * @return InputItem
      */
-    public function data(string $index, $defaultValue = null): InputItem;
+    public function data(string $index, mixed $defaultValue = null): InputItem;
 
     /**
      * @param string $index
      * @param mixed $defaultValue
      * @return InputFile
      */
-    public function file(string $index, $defaultValue = null): InputFile;
+    public function file(string $index, mixed $defaultValue = null): InputFile;
 
     /**
      * @param string $index
      * @param mixed $defaultValue
      * @return InputItem
      */
-    public function get(string $index, $defaultValue = null): InputItem;
+    public function get(string $index, mixed $defaultValue = null): InputItem;
 
     /**
      * @param array $filter

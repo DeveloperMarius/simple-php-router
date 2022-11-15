@@ -87,7 +87,7 @@ abstract class LoadableRoute extends Route implements ILoadableRoute
     {
         $this->url = ($url === '/') ? '/' : '/' . trim($url, '/') . '/';
 
-        if (strpos($this->url, $this->paramModifiers[0]) !== false) {
+        if (str_contains($this->url, $this->paramModifiers[0])) {
 
             $regex = sprintf(static::PARAMETERS_REGEX_FORMAT, $this->paramModifiers[0], $this->paramOptionalSymbol, $this->paramModifiers[1]);
 
@@ -132,11 +132,11 @@ abstract class LoadableRoute extends Route implements ILoadableRoute
      * Used when calling the url() helper.
      *
      * @param string|null $method
-     * @param string|array|null $parameters
+     * @param array|string|null $parameters
      * @param string|null $name
      * @return string
      */
-    public function findUrl(?string $method = null, $parameters = null, ?string $name = null): string
+    public function findUrl(?string $method = null, array|string $parameters = null, ?string $name = null): string
     {
         $url = $this->getUrl();
 
@@ -236,7 +236,7 @@ abstract class LoadableRoute extends Route implements ILoadableRoute
      * @return static
      * @see LoadableRoute::setName()
      */
-    public function name($name): ILoadableRoute
+    public function name(array|string $name): ILoadableRoute
     {
         return $this->setName($name);
     }

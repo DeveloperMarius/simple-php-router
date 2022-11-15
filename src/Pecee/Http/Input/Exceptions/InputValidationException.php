@@ -14,7 +14,7 @@ class InputValidationException extends Exception
      */
     private Validation $validation;
 
-    public function __construct($message, ?Validation $validation = null, $code = 0, Throwable $previous = null)
+    public function __construct(string $message, ?Validation $validation = null, int $code = 0, Throwable $previous = null)
     {
         $this->validation = $validation;
         parent::__construct($message, $code, $previous);
