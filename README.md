@@ -123,22 +123,9 @@ ___
 
 # Getting started
 
-I'm in contact with packagist to provide a composer repository, but while I'm doing that, please add the following to the `composer.json`:
+Add the latest version of the simple-router project running this command.
 ```
-"repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/developermarius/simple-php-router"
-    },
-    {
-      "type": "composer",
-      "url": "https://packagist.org"
-    }
-],
-"require": {
-    "php": ">=8.0",
-    "pecee/simple-router": "^5",
-}
+composer require developermarius/simple-php-router
 ```
 
 ## Migrating from to the fork
@@ -194,7 +181,10 @@ You can find the demo-project here: [https://github.com/skipperbent/simple-route
 
 ## Installation
 
-1. Add the project to your `composer.json` as explained above.
+1. Navigate to your project folder in terminal and run the following command:
+```
+composer require developermarius/simple-php-router
+```
 
 ### Setting up Nginx
 
