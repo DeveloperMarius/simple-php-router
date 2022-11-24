@@ -273,13 +273,16 @@ class SimpleRouter
     /**
      * Groups allows for encapsulating routes with special settings.
      *
-     * @param array $settings
+     *  @param string|array $settings Route prefix or settings array
      * @param Closure $callback
      * @return RouteGroup
      * @throws InvalidArgumentException
      */
-    public static function group(array $settings, Closure $callback): RouteGroup
+    public static function group(string|array $settings, Closure $callback): RouteGroup
     {
+        if(is_string($settings))
+            $settings = ['prefix' => $settings];
+        
         $group = new RouteGroup();
         $group->setCallback($callback);
         $group->setSettings($settings);
