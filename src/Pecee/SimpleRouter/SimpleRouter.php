@@ -12,6 +12,7 @@ namespace Pecee\SimpleRouter;
 
 use Closure;
 use Exception;
+use JetBrains\PhpStorm\Deprecated;
 use Pecee\Exceptions\InvalidArgumentException;
 use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\Http\Middleware\Exceptions\TokenMismatchException;
@@ -296,12 +297,17 @@ class SimpleRouter
      * Special group that has the same benefits as group but supports
      * parameters and which are only rendered when the url matches.
      *
+     * @deprecated Normal groups now support a prefix shorthand
      * @param string $url
      * @param Closure $callback
      * @param array $settings
      * @return RoutePartialGroup
      * @throws InvalidArgumentException
      */
+    #[Deprecated(
+        reason: 'Normal groups now support a prefix shorthand',
+        replacement: '%class%::group(%parameter0%, %parameter1%)'
+    )]
     public static function partialGroup(string $url, Closure $callback, array $settings = []): RoutePartialGroup
     {
         $settings['prefix'] = $url;

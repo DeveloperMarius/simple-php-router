@@ -53,7 +53,6 @@ You can donate any amount of your choice by [clicking here](https://www.paypal.c
 		- [Namespaces](#namespaces)
 		- [Subdomain-routing](#subdomain-routing)
 		- [Route prefixes](#route-prefixes)
-	- [Partial groups](#partial-groups)
 	- [Form Method Spoofing](#form-method-spoofing)
 	- [Accessing The Current Route](#accessing-the-current-route)
 	- [Other examples](#other-examples)
@@ -621,6 +620,16 @@ You can also use parameters in your groups:
 
 ```php
 SimpleRouter::group(['prefix' => '/lang/{language}'], function ($language) {
+    SimpleRouter::get('/users', function ($language)    {
+        // Matches The "/lang/da/users" URL
+    });
+});
+```
+
+or use the shorthand if you don't want to pass additional settings:
+
+```php
+SimpleRouter::group('/lang/{language}', function ($language) {
     SimpleRouter::get('/users', function ($language)    {
         // Matches The "/lang/da/users" URL
     });
