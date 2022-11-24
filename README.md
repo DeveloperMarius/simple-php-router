@@ -66,29 +66,29 @@ You can donate any amount of your choice by [clicking here](https://www.paypal.c
 - [Middlewares](#middlewares)
 	- [Example](#example-1)
 - [ExceptionHandlers](#exceptionhandlers)
-    - [Handling 404, 403 and other errors](#handling-404-403-and-other-errors)
+	- [Handling 404, 403 and other errors](#handling-404-403-and-other-errors)
 	- [Using custom exception handlers](#using-custom-exception-handlers)
 		- [Prevent merge of parent exception-handlers](#prevent-merge-of-parent-exception-handlers)
 - [Urls](#urls)
-    - [Get the current url](#get-the-current-url)
- 	- [Get by name (single route)](#get-by-name-single-route)
- 	- [Get by name (controller route)](#get-by-name-controller-route)
- 	- [Get by class](#get-by-class)
- 	- [Using custom names for methods on a controller/resource route](#using-custom-names-for-methods-on-a-controllerresource-route)
- 	- [Getting REST/resource controller urls](#getting-restresource-controller-urls)
- 	- [Manipulating url](#manipulating-url)
- 	- [Useful url tricks](#useful-url-tricks)
+	- [Get the current url](#get-the-current-url)
+	- [Get by name (single route)](#get-by-name-single-route)
+	- [Get by name (controller route)](#get-by-name-controller-route)
+	- [Get by class](#get-by-class)
+	- [Using custom names for methods on a controller/resource route](#using-custom-names-for-methods-on-a-controllerresource-route)
+	- [Getting REST/resource controller urls](#getting-restresource-controller-urls)
+	- [Manipulating url](#manipulating-url)
+	- [Useful url tricks](#useful-url-tricks)
 - [Input & parameters](#input--parameters)
-    - [Using the Input class to manage parameters](#using-the-input-class-to-manage-parameters)
-	    - [Get single parameter value](#get-single-parameter-value)
-	    - [Get parameter object](#get-parameter-object)
-	    - [Managing files](#managing-files)
-	    - [Get all parameters](#get-all-parameters)
-	    - [Check if parameters exists](#check-if-parameters-exists)
+	- [Using the Input class to manage parameters](#using-the-input-class-to-manage-parameters)
+		- [Get single parameter value](#get-single-parameter-value)
+		- [Get parameter object](#get-parameter-object)
+		- [Managing files](#managing-files)
+		- [Get all parameters](#get-all-parameters)
+		- [Check if parameters exists](#check-if-parameters-exists)
 - [Events](#events)
-    - [Available events](#available-events)
-    - [Registering new event](#registering-new-event)
-    - [Custom EventHandlers](#custom-eventhandlers)
+	- [Available events](#available-events)
+	- [Registering new event](#registering-new-event)
+	- [Custom EventHandlers](#custom-eventhandlers)
 - [Advanced](#advanced)
 	- [Disable multiple route rendering](#disable-multiple-route-rendering)
 	- [Restrict access to IP](#restrict-access-to-ip)
@@ -98,23 +98,23 @@ You can donate any amount of your choice by [clicking here](https://www.paypal.c
 		- [Bootmanager: loading routes dynamically](#bootmanager-loading-routes-dynamically)
 		- [Adding routes manually](#adding-routes-manually)
 	- [Custom class-loader](#custom-class-loader)
-	  - [Integrating with php-di](#Integrating-with-php-di)
+		- [Integrating with php-di](#Integrating-with-php-di)
 	- [Parameters](#parameters)
 	- [Extending](#extending)
 - [Help and support](#help-and-support)
-    - [Common issues and fixes](#common-issues-and-fixes)
-        - [Multiple routes matches? Which one has the priority?](#multiple-routes-matches-which-one-has-the-priority)
-        - [Parameters won't match or route not working with special characters](#parameters-wont-match-or-route-not-working-with-special-characters)
-        - [Using the router on sub-paths](#using-the-router-on-sub-paths)
-    - [Debugging](#debugging)
-        - [Creating unit-tests](#creating-unit-tests) 
-        - [Debug information](#debug-information)
-        - [Benchmark and log-info](#benchmark-and-log-info)
-    - [Reporting a new issue](#reporting-a-new-issue)
-        - [Procedure for reporting a new issue](#procedure-for-reporting-a-new-issue)
-        - [Issue template](#issue-template)
-    - [Feedback and development](#feedback-and-development)
-   	    - [Contribution development guidelines](#contribution-development-guidelines)
+	- [Common issues and fixes](#common-issues-and-fixes)
+		- [Multiple routes matches? Which one has the priority?](#multiple-routes-matches-which-one-has-the-priority)
+		- [Parameters won't match or route not working with special characters](#parameters-wont-match-or-route-not-working-with-special-characters)
+		- [Using the router on sub-paths](#using-the-router-on-sub-paths)
+	- [Debugging](#debugging)
+		- [Creating unit-tests](#creating-unit-tests)
+		- [Debug information](#debug-information)
+		- [Benchmark and log-info](#benchmark-and-log-info)
+	- [Reporting a new issue](#reporting-a-new-issue)
+		- [Procedure for reporting a new issue](#procedure-for-reporting-a-new-issue)
+		- [Issue template](#issue-template)
+	- [Feedback and development](#feedback-and-development)
+		- [Contribution development guidelines](#contribution-development-guidelines)
 - [Credits](#credits)
 	- [Sites](#sites)
 	- [License](#license)
@@ -229,29 +229,29 @@ Simply create a new `web.config` file in your projects `public` directory and pa
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <system.webServer>
-	<rewrite>
-	  <rules>
-		<!-- Remove slash '/' from the en of the url -->
-		<rule name="RewriteRequestsToPublic">
-		  <match url="^(.*)$" />
-		  <conditions logicalGrouping="MatchAll" trackAllCaptures="false">
-		  </conditions>
-		  <action type="Rewrite" url="/{R:0}" />
-		</rule>
+	<system.webServer>
+		<rewrite>
+			<rules>
+				<!-- Remove slash '/' from the en of the url -->
+				<rule name="RewriteRequestsToPublic">
+					<match url="^(.*)$" />
+					<conditions logicalGrouping="MatchAll" trackAllCaptures="false">
+					</conditions>
+					<action type="Rewrite" url="/{R:0}" />
+				</rule>
 
-		<!-- When requested file or folder don't exists, will request again through index.php -->
-		<rule name="Imported Rule 1" stopProcessing="true">
-		  <match url="^(.*)$" ignoreCase="true" />
-		  <conditions logicalGrouping="MatchAll">
-			<add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
-			<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
-		  </conditions>
-		  <action type="Rewrite" url="/index.php/{R:1}" appendQueryString="true" />
-		</rule>
-	  </rules>
-	</rewrite>
-    </system.webServer>
+				<!-- When requested file or folder don't exists, will request again through index.php -->
+				<rule name="Imported Rule 1" stopProcessing="true">
+					<match url="^(.*)$" ignoreCase="true" />
+					<conditions logicalGrouping="MatchAll">
+						<add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+						<add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+					</conditions>
+					<action type="Rewrite" url="/index.php/{R:1}" appendQueryString="true" />
+				</rule>
+			</rules>
+		</rewrite>
+	</system.webServer>
 </configuration>
 ```
 
@@ -271,7 +271,7 @@ You can also make one exception for files with some extensions:
 <add input="{REQUEST_FILENAME}" pattern="\.ico|\.png|\.css|\.jpg" negate="true" ignoreCase="true" />
 ```
 
-If you are using `$_SERVER['ORIG_PATH_INFO']`, you will get `\index.php\` as part of the returned value. 
+If you are using `$_SERVER['ORIG_PATH_INFO']`, you will get `\index.php\` as part of the returned value.
 
 **Example:**
 
@@ -578,7 +578,7 @@ SimpleRouter::group(['namespace' => 'Admin'], function () {
 
 You can add parameters to the prefixes of your routes.
 
-Parameters from your previous routes will be injected 
+Parameters from your previous routes will be injected
 into your routes after any route-required parameters, starting from oldest to newest.
 
 ```php
@@ -629,13 +629,13 @@ SimpleRouter::group(['prefix' => '/lang/{language}'], function ($language) {
 
 ## Partial groups
 
-Partial router groups has the same benefits as a normal group, but **are only rendered once the url has matched** 
+Partial router groups has the same benefits as a normal group, but **are only rendered once the url has matched**
 in contrast to a normal group which are always rendered in order to retrieve it's child routes.
 Partial groups are therefore more like a hybrid of a traditional route with the benefits of a group.
 
 This can be extremely useful in situations where you only want special routes to be added, but only when a certain criteria or logic has been met.
 
-**NOTE:** Use partial groups with caution as routes added within are only rendered and available once the url of the partial-group has matched. 
+**NOTE:** Use partial groups with caution as routes added within are only rendered and available once the url of the partial-group has matched.
 This can cause `url()` not to find urls for the routes added within before the partial-group has been matched and is rendered.
 
 **Example:**
@@ -739,7 +739,7 @@ InputValidator::make()->setRules([
 
 ### Access the Factory
 
-You can easily access the Validation Factory to change the language or add a custom rule:  
+You can easily access the Validation Factory to change the language or add a custom rule:
 ```php
 use \Pecee\Http\Input\InputValidator;
 
@@ -835,8 +835,8 @@ The example below will post to the current url with a hidden field "`csrf_token`
 
 ```html
 <form method="post" action="<?= url(); ?>">
-    <input type="hidden" name="csrf_token" value="<?= csrf_token(); ?>">
-    <!-- other input elements here -->
+	<input type="hidden" name="csrf_token" value="<?= csrf_token(); ?>">
+	<!-- other input elements here -->
 </form>
 ```
 
@@ -1073,8 +1073,8 @@ By default all controller and resource routes will use a simplified version of t
 
 You easily use the `url()` shortcut helper function to retrieve urls for your routes or manipulate the current url.
 
-`url()` will return a `Url` object which will return a `string` when rendered, so it can be used safely in templates etc. but 
-contains all the useful helpers methods in the `Url` class like `contains`, `indexOf` etc. 
+`url()` will return a `Url` object which will return a `string` when rendered, so it can be used safely in templates etc. but
+contains all the useful helpers methods in the `Url` class like `contains`, `indexOf` etc.
 Check the [Useful url tricks](#useful-url-tricks) below.
 
 ### Get the current url
@@ -1167,7 +1167,7 @@ You can easily manipulate the query-strings, by adding your get param arguments.
 url(null, null, ['q' => 'cars']);
 ```
 
-You can remove a query-string parameter by setting the value to `null`. 
+You can remove a query-string parameter by setting the value to `null`.
 
 The example below will remove any query-string parameter named `q` from the url but keep all others query-string parameters:
 
@@ -1219,12 +1219,12 @@ To quickly get a value from a parameter, you can use the `input` helper function
 
 This will automatically trim the value and ensure that it's not empty. If it's empty the `$defaultValue` will be returned instead.
 
-**Note:** 
+**Note:**
 This function returns a `string` unless the parameters are grouped together, in that case it will return an `array` of values.
 
 **Example:**
 
-This example matches both POST and GET request-methods and if name is empty the default-value "Guest" will be returned. 
+This example matches both POST and GET request-methods and if name is empty the default-value "Guest" will be returned.
 
 ```php
 $name = $this->input('name', 'Guest', 'post', 'get');
@@ -1340,7 +1340,7 @@ All object implements the `IInputItem` interface and will always contain these m
 
 ### Check if parameters exists
 
-You can easily if multiple items exists by using the `exists` method. It's simular to `value` as it can be used 
+You can easily if multiple items exists by using the `exists` method. It's simular to `value` as it can be used
 to filter on request-methods and supports both `string` and `array` as parameter value.
 
 **Example:**
@@ -1365,7 +1365,7 @@ It will also cover the basics of event-handlers; how to use the handlers provide
 
 This section contains all available events that can be registered using the `EventHandler`.
 
-All event callbacks will retrieve a `EventArgument` object as parameter. This object contains easy access to event-name, router- and request instance and any special event-arguments related to the given event. You can see what special event arguments each event returns in the list below.  
+All event callbacks will retrieve a `EventArgument` object as parameter. This object contains easy access to event-name, router- and request instance and any special event-arguments related to the given event. You can see what special event arguments each event returns in the list below.
 
 | Name                       | Special arguments                                        | Description                                                                                                                                                                                                        | 
 |----------------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
@@ -1390,7 +1390,7 @@ All event callbacks will retrieve a `EventArgument` object as parameter. This ob
 
 To register a new event you need to create a new instance of the `EventHandler` object. On this object you can add as many callbacks as you like by calling the `registerEvent` method.
 
-When you've registered events, make sure to add it to the router by calling 
+When you've registered events, make sure to add it to the router by calling
 `SimpleRouter::addEventHandler()`. We recommend that you add your event-handlers within your `routes.php`.
 
 **Example:**
@@ -1419,7 +1419,7 @@ SimpleRouter::addEventHandler($eventHandler);
 
 ## Custom EventHandlers
 
-`EventHandler` is the class that manages events and must inherit from the `IEventHandler` interface. The handler knows how to handle events for the given handler-type. 
+`EventHandler` is the class that manages events and must inherit from the `IEventHandler` interface. The handler knows how to handle events for the given handler-type.
 
 Most of the time the basic `\Pecee\SimpleRouter\Handler\EventHandler` class will be more than enough for most people as you simply register an event which fires when triggered.
 
@@ -1846,7 +1846,7 @@ This section will go over common issues and how to resolve them.
 
 ### Parameters won't match or route not working with special characters
 
-Often people experience this issue when one or more parameters contains special characters. The router uses a sparse regular-expression that matches letters from a-z along with numbers when matching parameters, to improve performance. 
+Often people experience this issue when one or more parameters contains special characters. The router uses a sparse regular-expression that matches letters from a-z along with numbers when matching parameters, to improve performance.
 
 All other characters has to be defined via the `defaultParameterRegex` option on your route.
 
@@ -1858,7 +1858,7 @@ The router will match routes in the order they're added and will render multiple
 
 If you want the router to stop when a route is matched, you simply return a value in your callback or stop the execution manually (using `response()->json()` etc.) or simply by returning a result.
 
-Any returned objects that implements the `__toString()` magic method will also prevent other routes from being rendered. 
+Any returned objects that implements the `__toString()` magic method will also prevent other routes from being rendered.
 
 If you want the router only to execute one route per request, you can [disabling multiple route rendering](#disable-multiple-route-rendering).
 
@@ -1868,9 +1868,9 @@ Please refer to [Setting custom base path](#setting-custom-base-path) part of th
 
 ## Debugging
 
-This section will show you how to write unit-tests for the router, view useful debugging information and answer some of the frequently asked questions. 
+This section will show you how to write unit-tests for the router, view useful debugging information and answer some of the frequently asked questions.
 
-It will also covers how to report any issue you might encounter. 
+It will also covers how to report any issue you might encounter.
 
 ### Creating unit-tests
 
@@ -1933,7 +1933,7 @@ Depending on your test, you can use the methods below when rendering routes in y
 
 The library can output debug-information, which contains information like loaded routes, the parsed request-url etc. It also contains info which are important when reporting a new issue like PHP-version, library version, server-variables, router debug log etc.
 
-You can activate the debug-information by calling the alternative start-method. 
+You can activate the debug-information by calling the alternative start-method.
 
 The example below will start the routing an return array with debugging-information
 
@@ -2051,9 +2051,32 @@ Remember that a more detailed issue- description and debug-info might suck to wr
 
 - Domain parameters are always appended at the end of the parameters passed to functions. (Ignores `$parameterReverseOrder`)
 
+## TODO
+
+- Add function like ->controller() to autoload routes with the php attribute Route:
+  `SimpleRouter::loadRoutes(ArticleController::class);`
+  SampleController.class:
+```php
+class ArticleController{
+
+	use RouterUtils;
+	
+	#[Route(Route::POST, '/')]
+	public function createArticle(){
+		...
+	}
+	
+	#[Route(Route::GET, '/{id}')]
+	public function getArticle(#[ValidatorAttribute] int $id){
+		...
+	}
+
+}
+```
+
 ## Feedback and development
 
-If the library is missing a feature that you need in your project or if you have feedback, we'd love to hear from you. 
+If the library is missing a feature that you need in your project or if you have feedback, we'd love to hear from you.
 Feel free to leave us feedback by [creating a new issue](https://github.com/skipperbent/simple-php-router/issues/new).
 
 **Experiencing an issue?**
@@ -2065,7 +2088,7 @@ Please refer to our [Help and support](#help-and-support) section in the documen
 - Please try to follow the PSR-2 codestyle guidelines.
 
 - Please create your pull requests to the development base that matches the version number you want to change.
-For example when pushing changes to version 3, the pull request should use the `v3-development` base/branch.
+  For example when pushing changes to version 3, the pull request should use the `v3-development` base/branch.
 
 - Create detailed descriptions for your commits, as these will be used in the changelog for new releases.
 
@@ -2076,15 +2099,6 @@ For example when pushing changes to version 3, the pull request should use the `
 ---
 
 # Credits
-
-## Sites
-
-This is some sites that uses the simple-router project in production.
-
-- [holla.dk](http://www.holla.dk)
-- [ninjaimg.com](http://ninjaimg.com)
-- [bookandbegin.com](https://bookandbegin.com)
-- [dscuz.com](https://www.dscuz.com)
 
 ## License
 

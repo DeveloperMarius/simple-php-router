@@ -144,4 +144,59 @@ class Response
         return $this;
     }
 
+    /**
+     * @return static
+     */
+    #[NoReturn]
+    public function back(): self
+    {
+        $referer = $this->request->getReferer();
+
+        if ($referer === null) {
+            $this->refresh();
+        }
+
+        $this->redirect($referer);
+    }
+
+    /**
+     * @param string $raw
+     * @return void
+     */
+    #[NoReturn]
+    public function raw(string $raw): void
+    {
+        echo $raw;
+        exit(0);
+    }
+
+    /**
+     * @param string $filename
+     * @return void
+     */
+    #[NoReturn]
+    public function render(string $filename): void
+    {
+        $this->raw(file_get_contents($filename));
+    }
+
+    /**
+     * @requires https://github.com/erusev/parsedown
+     *
+     * @param string $code
+     * @param bool $save_mode
+     * @return void
+     */
+    #[NoReturn]
+    public function markdown(string $code, bool $save_mode = false): void
+    {
+        if(!class_exists('\Parsedown')){
+            $this->raw($code);
+        }
+        $parsedown = new \Parsedown();
+        $parsedown->setSafeMode($save_mode);
+
+        $this->raw($parsedown->text($code));
+    }
+
 }

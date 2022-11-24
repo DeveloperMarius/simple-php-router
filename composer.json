@@ -42,7 +42,8 @@
     "phpstan/phpstan": "^0",
     "phpstan/phpstan-phpunit": "^0",
     "phpstan/phpstan-deprecation-rules": "^0",
-    "phpstan/phpstan-strict-rules": "^0"
+    "phpstan/phpstan-strict-rules": "^0",
+    "erusev/parsedown": "^1.7"
   },
   "scripts": {
     "test": [
