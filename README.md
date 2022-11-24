@@ -627,27 +627,6 @@ SimpleRouter::group(['prefix' => '/lang/{language}'], function ($language) {
 });
 ```
 
-## Partial groups
-
-Partial router groups has the same benefits as a normal group, but **are only rendered once the url has matched**
-in contrast to a normal group which are always rendered in order to retrieve it's child routes.
-Partial groups are therefore more like a hybrid of a traditional route with the benefits of a group.
-
-This can be extremely useful in situations where you only want special routes to be added, but only when a certain criteria or logic has been met.
-
-**NOTE:** Use partial groups with caution as routes added within are only rendered and available once the url of the partial-group has matched.
-This can cause `url()` not to find urls for the routes added within before the partial-group has been matched and is rendered.
-
-**Example:**
-
-```php
-SimpleRouter::partialGroup('/plugin/{name}', function ($plugin) {
-
-    // Add routes from plugin
-
-});
-```
-
 ## Form Method Spoofing
 
 HTML forms do not support `PUT`, `PATCH` or `DELETE` actions. So, when defining `PUT`, `PATCH` or `DELETE` routes that are called from an HTML form, you will need to add a hidden `_method` field to the form. The value sent with the `_method` field will be used as the HTTP request method:
