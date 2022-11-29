@@ -10,9 +10,9 @@ class InputValidationException extends Exception
 {
 
     /**
-     * @var Validation $validation
+     * @var Validation|null $validation
      */
-    private Validation $validation;
+    private ?Validation $validation;
 
     public function __construct(string $message, ?Validation $validation = null, int $code = 0, Throwable $previous = null)
     {
