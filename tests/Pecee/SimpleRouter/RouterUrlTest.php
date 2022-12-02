@@ -7,11 +7,23 @@ require_once 'Dummy/Handler/ExceptionHandler.php';
 class RouterUrlTest extends \PHPUnit\Framework\TestCase
 {
 
-    public function testMultipleSlashes(){
-        TestRouter::get('///test/test2', 'DummyController@method1');
+    public function testDangerousTrimBehavior(){
+        //Test / show that this is possible
 
-        TestRouter::debugNoReset('///test/test2/', 'get');
+        //trim request url: Route@parseParameters
+        //trim route urls: LoadableRoute@setUrl
+        TestRouter::get('/test/test2', 'DummyController@method1');
+        TestRouter::debugNoReset('/test/test2', 'get');
         $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
+        TestRouter::debugNoReset('//test/test2', 'get');
+        $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
+        TestRouter::debugNoReset('///test/test2', 'get');
+        $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
+    }
+
+    public function testMultipleSlashes(){
+        $this->expectException(\Pecee\SimpleRouter\Exceptions\NotFoundHttpException::class);
+        TestRouter::debugNoReset('///test/test2', 'get');
     }
 
     public function testIssue253()

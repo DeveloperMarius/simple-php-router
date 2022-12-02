@@ -2061,6 +2061,7 @@ class ArticleController{
 
 }
 ```
+- Dangerous route match behavior with trim. See `RouterUrlTest@testDangerousTrimBehavior`
 
 ## Feedback and development
 
