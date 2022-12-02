@@ -21,7 +21,7 @@ class CsrfVerifierTest extends \PHPUnit\Framework\TestCase
 
         $request = new Request(false);
         $request->setMethod(\Pecee\Http\Request::REQUEST_TYPE_POST);
-        $request->setUrl(new \Pecee\Http\Url('/page'));
+        $request->setUrl(new \Pecee\Http\Url('/page', false));
         $request->fetch();
 
         $csrf->handle($request);
@@ -42,7 +42,7 @@ class CsrfVerifierTest extends \PHPUnit\Framework\TestCase
 
         $request = new Request(false);
         $request->setMethod(\Pecee\Http\Request::REQUEST_TYPE_POST);
-        $request->setUrl(new \Pecee\Http\Url('/page'));
+        $request->setUrl(new \Pecee\Http\Url('/page', false));
         $request->fetch();
 
         $csrf->handle($request);
@@ -54,16 +54,16 @@ class CsrfVerifierTest extends \PHPUnit\Framework\TestCase
         $csrf = new DummyCsrfVerifier();
         $request = $router->getRequest();
 
-        $request->setUrl(new \Pecee\Http\Url('/exclude-page'));
+        $request->setUrl(new \Pecee\Http\Url('/exclude-page', false));
         $this->assertTrue($csrf->testSkip($router->getRequest()));
 
-        $request->setUrl(new \Pecee\Http\Url('/exclude-all/page'));
+        $request->setUrl(new \Pecee\Http\Url('/exclude-all/page', false));
         $this->assertTrue($csrf->testSkip($router->getRequest()));
 
-        $request->setUrl(new \Pecee\Http\Url('/exclude-all/include-page'));
+        $request->setUrl(new \Pecee\Http\Url('/exclude-all/include-page', false));
         $this->assertFalse($csrf->testSkip($router->getRequest()));
 
-        $request->setUrl(new \Pecee\Http\Url('/include-page'));
+        $request->setUrl(new \Pecee\Http\Url('/include-page', false));
         $this->assertFalse($csrf->testSkip($router->getRequest()));
     }
 

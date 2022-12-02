@@ -7,6 +7,13 @@ require_once 'Dummy/Handler/ExceptionHandler.php';
 class RouterUrlTest extends \PHPUnit\Framework\TestCase
 {
 
+    public function testMultipleSlashes(){
+        TestRouter::get('///test/test2', 'DummyController@method1');
+
+        TestRouter::debugNoReset('///test/test2/', 'get');
+        $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
+    }
+
     public function testIssue253()
     {
         TestRouter::get('/', 'DummyController@method1');

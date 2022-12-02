@@ -468,7 +468,7 @@ class SimpleRouter
         try {
             return static::router()->getUrl($name, $parameters, $getParams);
         } catch (Exception $e) {
-            return new Url('/');
+            return new Url('/', false);
         }
     }
 

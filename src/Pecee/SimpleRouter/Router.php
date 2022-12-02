@@ -31,7 +31,7 @@ class Router
      * Current request
      * @var Request|null
      */
-    protected ?Request $request;
+    protected ?Request $request = null;
 
     /**
      * Defines if a route is currently being processed.
@@ -695,7 +695,7 @@ class Router
         ]);
 
         if ($name === '' && $parameters === '') {
-            return new Url('/');
+            return new Url('/', false);
         }
 
         /* Only merge $_GET when all parameters are null */

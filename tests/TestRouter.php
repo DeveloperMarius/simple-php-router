@@ -12,7 +12,7 @@ class TestRouter extends \Pecee\SimpleRouter\SimpleRouter
     {
         $request = static::request();
 
-        $request->setUrl((new \Pecee\Http\Url($testUrl))->setHost('local.unitTest'));
+        $request->setUrl((new \Pecee\Http\Url($testUrl, false))->setHost('local.unitTest'));
         $request->setMethod($testMethod);
 
         static::start();

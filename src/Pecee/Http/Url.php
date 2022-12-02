@@ -56,20 +56,21 @@ class Url implements JsonSerializable
      * Url constructor.
      *
      * @param string|null $url
+     * @param bool $includesHost
      * @throws MalformedUrlException
      */
-    public function __construct(?string $url)
+    public function __construct(?string $url, bool $includesHost = true)
     {
         $this->originalUrl = $url;
 
         if ($url !== null && $url !== '/') {
-            $data = $this->parseUrl($url);
+            $data = $this->parseUrl($includesHost ? $url : 'https://host.com' . $url);
 
-            $this->scheme = $data['scheme'] ?? null;
-            $this->host = $data['host'] ?? null;
-            $this->port = $data['port'] ?? null;
-            $this->username = $data['user'] ?? null;
-            $this->password = $data['pass'] ?? null;
+            $this->scheme = $includesHost ? ($data['scheme'] ?? null) : null;
+            $this->host = $includesHost ? ($data['host'] ?? null) : null;
+            $this->port = $includesHost ? ($data['port'] ?? null) : null;
+            $this->username = $includesHost ? ($data['user'] ?? null) : null;
+            $this->password = $includesHost ? ($data['pass'] ?? null) : null;
 
             if (isset($data['path']) === true) {
                 $this->setPath($data['path']);

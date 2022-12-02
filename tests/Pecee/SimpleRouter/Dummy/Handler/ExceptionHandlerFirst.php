@@ -7,7 +7,7 @@ class ExceptionHandlerFirst implements \Pecee\SimpleRouter\Handlers\IExceptionHa
 	    global $stack;
 	    $stack[] = static::class;
 
-		$request->setUrl(new \Pecee\Http\Url('/'));
+		$request->setUrl(new \Pecee\Http\Url('/', false));
 	}
 
 }

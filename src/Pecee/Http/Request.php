@@ -3,6 +3,7 @@
 namespace Pecee\Http;
 
 use Closure;
+use Pecee\Http\Exceptions\MalformedUrlException;
 use Pecee\Http\Input\Exceptions\InputValidationException;
 use Pecee\Http\Input\InputHandler;
 use Pecee\Http\Input\InputValidator;
@@ -138,11 +139,11 @@ class Request
         // Check if special IIS header exist, otherwise use default.
         $url = $this->getHeader('unencoded-url');
         if($url !== null){
-            $this->setUrl(new Url($url));
+            $this->setUrl(new Url($url, false));
         }else{
             $request_uri = $this->getHeader('request-uri');
             if($request_uri !== null)
-                $this->setUrl(new Url(urldecode($request_uri)));
+                $this->setUrl(new Url(urldecode($request_uri), false));
         }
         $this->setContentType((string)$this->getHeader('content-type'));
         $this->setMethod((string)($_POST[static::FORCE_METHOD_KEY] ?? $this->getHeader('request-method')));
