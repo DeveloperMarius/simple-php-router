@@ -19,11 +19,15 @@ class RouterUrlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
         TestRouter::debugNoReset('///test/test2', 'get');
         $this->assertEquals('/test/test2/', TestRouter::router()->getRequest()->getLoadedRoute()->getUrl());
+
+        TestRouter::resetRouter();
     }
 
     public function testMultipleSlashes(){
         $this->expectException(\Pecee\SimpleRouter\Exceptions\NotFoundHttpException::class);
         TestRouter::debugNoReset('///test/test2', 'get');
+
+        TestRouter::resetRouter();
     }
 
     public function testIssue253()
