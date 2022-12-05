@@ -17,13 +17,13 @@ class BaseCsrfVerifier implements IMiddleware
      * For example: /admin/*
      * @var array|null
      */
-    protected ?array $except = null;
+    protected $except = null;
 
     /**
      * Urls to include. Can be used to include urls from a certain path.
      * @var array|null
      */
-    protected ?array $include;
+    protected $include;
 
     /**
      * @var ITokenProvider
