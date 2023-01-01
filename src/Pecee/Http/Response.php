@@ -107,7 +107,7 @@ class Response
      * @throws InvalidArgumentException
      */
     #[NoReturn]
-    public function json(mixed $value, ?int $options = null, int $dept = 512): void
+    public function json(mixed $value, int $options = 0, int $dept = 512): void
     {
         if (($value instanceof JsonSerializable) === false && is_array($value) === false) {
             throw new InvalidArgumentException('Invalid type for parameter "value". Must be of type array or object implementing the \JsonSerializable interface.');
