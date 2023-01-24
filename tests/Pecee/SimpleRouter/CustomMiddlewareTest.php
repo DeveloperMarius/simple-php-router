@@ -4,9 +4,36 @@ use Pecee\Http\Request;
 
 require_once 'Dummy/DummyController.php';
 require_once 'Dummy/Middleware/IpRestrictMiddleware.php';
+require_once 'Dummy/Middleware/AuthMiddleware.php';
 
 class CustomMiddlewareTest extends \PHPUnit\Framework\TestCase
 {
+
+    public function testAuthMiddlewareWithEchoCallback(){
+        TestRouter::resetRouter();
+
+        AuthMiddleware::$auth = true;
+        TestRouter::group(['prefix' => '/','middleware' => AuthMiddleware::class], function () {
+            TestRouter::get('/home', 'DummyController@method3');
+        });
+
+        TestRouter::get('/login', 'DummyController@login');
+
+
+        $out = TestRouter::debugOutput('/home');
+        $this->assertEquals('login', $out);
+
+        TestRouter::resetRouter();
+
+        AuthMiddleware::$auth = false;
+        TestRouter::group(['prefix' => '/','middleware' => AuthMiddleware::class], function () {
+            TestRouter::get('/home', 'DummyController@method3');
+        });
+
+        TestRouter::get('/login', 'DummyController@login');
+        $out = TestRouter::debugOutput('/home');
+        $this->assertEquals('method3', $out);
+    }
 
     public function testIpBlock() {
 

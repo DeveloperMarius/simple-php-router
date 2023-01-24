@@ -56,4 +56,9 @@ class DummyController
         echo 'putTest';
     }
 
+    public function login()
+    {
+        echo 'login';
+    }
+
 }
