@@ -526,7 +526,7 @@ class Router
                 'rewriteRoute' => $this->getRequest()->getRewriteRoute(),
             ]);
 
-            return $this->routeRequest();
+            return $this->routeRequest() ?? '';
         }
 
         return null;
