@@ -465,12 +465,15 @@ class InputHandler implements IInputHandler
     /**
      * @return IInputItem[]
      */
-    public function requireAttributes(): array{
-        $filter = array();
+    public function requireAttributes(?array $filter = null): array{
+        $value_filter = array();
         foreach($this->getValidatorAttributes() as $attribute){
-            $filter[$attribute->getName()] = $attribute->getType();
+            if(str_contains($attribute->getName(), '.'))
+                continue;
+            if($filter === null || in_array($attribute->getName(), $filter))
+                $value_filter[$attribute->getName()] = $attribute->getType();
         }
-        return $this->all($filter);
+        return $this->all($value_filter);
     }
 
     /**
@@ -480,6 +483,8 @@ class InputHandler implements IInputHandler
     public function requireAttributeValues(?array $filter = null): array{
         $value_filter = array();
         foreach($this->getValidatorAttributes() as $attribute){
+            if(str_contains($attribute->getName(), '.'))
+                continue;
             if($filter === null || in_array($attribute->getName(), $filter))
                 $value_filter[$attribute->getName()] = $attribute->getType();
         }
