@@ -325,11 +325,12 @@ class InputHandler implements IInputHandler
      * Get input element value matching index
      *
      * @param array<string>|array<string, callable> $filter
+     * @param string|array ...$methods
      * @return array
      */
-    public function values(array $filter = []): array
+    public function values(array $filter = [], ...$methods): array
     {
-        $inputs = $this->all($filter);
+        $inputs = $this->all($filter, ...$methods);
 
         $values = array();
         foreach($inputs as $key => $input){
@@ -370,7 +371,7 @@ class InputHandler implements IInputHandler
      * @return InputItem
      * @deprecated Use $item->data() instead
      */
-    public function post(string $index, $defaultValue = null): InputItem
+    public function post(string $index, mixed $defaultValue = null): InputItem
     {
         return $this->data($index, $defaultValue);
     }
@@ -382,7 +383,7 @@ class InputHandler implements IInputHandler
      * @param mixed $defaultValue
      * @return InputItem
      */
-    public function data(string $index, $defaultValue = null): InputItem
+    public function data(string $index, mixed $defaultValue = null): InputItem
     {
         if(!isset($this->data[$index]))
             return new InputItem($index, $defaultValue);
@@ -396,7 +397,7 @@ class InputHandler implements IInputHandler
      * @param mixed $defaultValue
      * @return InputFile
      */
-    public function file(string $index, $defaultValue = null): InputFile
+    public function file(string $index, mixed $defaultValue = null): InputFile
     {
         if(!isset($this->file[$index]))
             return (new InputFile($index))->setValue($defaultValue);
@@ -410,7 +411,7 @@ class InputHandler implements IInputHandler
      * @param mixed $defaultValue
      * @return InputItem
      */
-    public function get(string $index, $defaultValue = null): InputItem
+    public function get(string $index, mixed $defaultValue = null): InputItem
     {
         if(!isset($this->get[$index]))
             return new InputItem($index, $defaultValue);
@@ -420,11 +421,27 @@ class InputHandler implements IInputHandler
     /**
      * Get all get/post/file items
      * @param array<string>|array<string, callable> $filter Only take items in filter
+     * @param string|array ...$methods
      * @return array<string, IInputItem>
      */
-    public function all(array $filter = []): array
+    public function all(array $filter = [], ...$methods): array
     {
-        $output = $this->data + $this->get + $this->file;
+        $output = array();
+        if(empty($methods)){
+            $output = $this->data + $this->get + $this->file;
+        }else{
+            if(is_array($methods[0]))
+                $methods = $methods[0];
+            if(in_array(Request::REQUEST_TYPE_GET, $methods, true) === true){
+                $output += $this->get;
+            }
+            if(count(array_intersect(Request::$requestTypesPost, $methods)) !== 0){
+                $output += $this->data;
+            }
+            if(in_array('file', $methods, true) === true){
+                $output += $this->file;
+            }
+        }
 
         $keys = count($filter) > 0 && !is_numeric(array_key_first($filter)) ? array_keys($filter) : $filter;
 
