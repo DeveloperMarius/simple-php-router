@@ -346,7 +346,11 @@ class Router
             ]);
 
             /* Verify csrf token for request */
-            $this->csrfVerifier->handle($this->getRequest());
+            try {
+                $this->csrfVerifier->handle($this->getRequest());
+            } catch(\Exception $e) {
+                $this->handleException($e);
+            }
         }
 
         $output = $this->routeRequest();
