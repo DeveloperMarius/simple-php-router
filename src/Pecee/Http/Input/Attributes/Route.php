@@ -25,10 +25,12 @@ class Route
     /**
      * @param string $method
      * @param string $route
+     * @param array|null $settings
      */
     public function __construct(
         #[ExpectedValues([Route::GET, Route::POST, Route::PUT, Route::PATCH, Route::DELETE, Route::OPTIONS])] private string $method,
-        private string $route
+        private string $route,
+        private ?array $settings = null
     ){}
 
     /**
@@ -45,5 +47,12 @@ class Route
     public function getRoute(): string
     {
         return $this->route;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getSettings(): ?array{
+        return $this->settings;
     }
 }
