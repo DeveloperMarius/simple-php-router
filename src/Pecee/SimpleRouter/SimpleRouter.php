@@ -28,11 +28,13 @@ use Pecee\SimpleRouter\Route\IGroupRoute;
 use Pecee\SimpleRouter\Route\ILoadableRoute;
 use Pecee\SimpleRouter\Route\IPartialGroupRoute;
 use Pecee\SimpleRouter\Route\IRoute;
+use Pecee\SimpleRouter\Route\Route;
 use Pecee\SimpleRouter\Route\RouteController;
 use Pecee\SimpleRouter\Route\RouteGroup;
 use Pecee\SimpleRouter\Route\RoutePartialGroup;
 use Pecee\SimpleRouter\Route\RouteResource;
 use Pecee\SimpleRouter\Route\RouteUrl;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionMethod;
 
 class SimpleRouter
 {
@@ -410,6 +412,41 @@ class SimpleRouter
         }
 
         return static::router()->addRoute($route);
+    }
+
+    public static function loadRoutes(string $controller)
+    {
+        $group = new RouteGroup();
+
+        $class = new \ReflectionClass($controller);
+        $attributes = $class->getAttributes(\Pecee\Http\Input\Attributes\RouteGroup::class);
+        if(sizeof($attributes) > 0){
+            /**
+             * @var $attribute RouteGroup
+             */
+            $attribute = $attributes[0]->newInstance();
+            $group->setPrefix($attribute->getRoute());
+            if($attribute->getSettings() !== null)
+                $group->setSettings($attribute->getSettings());
+        }
+
+        foreach($class->getMethods() as $method){
+            $attributes = $method->getAttributes(\Pecee\Http\Input\Attributes\Route::class);
+            foreach($attributes as $attribute){
+                /**
+                 * @var $attribute_attr Route
+                 */
+                $attribute_attr = $attribute->newInstance();
+
+                $route = new RouteUrl($attribute_attr->getRoute(), sprintf('%s@%s', $class->getName(), $method->getName()));
+                $route->setRequestMethods([$attribute_attr->getMethod()]);
+                if($attribute_attr->getSettings() !== null)
+                    $route->setSettings($attribute_attr->getSettings());
+                $route->setGroup($group);
+                static::router()->addRoute($route);
+            }
+
+        }
     }
 
     /**
