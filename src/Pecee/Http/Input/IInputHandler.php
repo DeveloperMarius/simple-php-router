@@ -60,13 +60,15 @@ interface IInputHandler
 
     /**
      * @param array $filter
+     * @param string|array ...$methods
      * @return array<string, IInputItem>
      */
-    public function all(array $filter = []): array;
+    public function all(array $filter = [], ...$methods): array;
 
     /**
      * @param array $filter
+     * @param string|array ...$methods
      * @return array
      */
-    public function values(array $filter = []): array;
+    public function values(array $filter = [], ...$methods): array;
 }
