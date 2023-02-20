@@ -36,6 +36,16 @@ class DummyController
         return 'method4';
     }
 
+    #[
+        ValidatorAttribute('data', 'array'),
+        ValidatorAttribute('data.*.id', 'int'),
+        ValidatorAttribute('data.*.name', 'string')
+    ]
+    public function method5()
+    {
+        return json_encode(TestRouter::router()->getRequest()->getInputHandler()->requireAttributeValues());
+    }
+
     public function param($params = null)
     {
         echo join(', ', func_get_args());
