@@ -447,20 +447,34 @@ class InputHandler implements IInputHandler
 
         $output = (count($keys) > 0) ? array_intersect_key($output, array_flip($keys)) : $output;
 
+        $this->all_recursive($filter, $output);
+
+        return $output;
+    }
+
+    private function all_recursive(array $filter, array $output){
+        $filter_sub = array();
         foreach ($filter as $filterKey => $parser) {
             if(is_int($filterKey)){
                 $filterKey = $parser;
                 $parser = null;
             }
-            if (array_key_exists($filterKey, $output) === false) {
-                $output[$filterKey] = new InputItem($filterKey);
+            $filterKeyParts = explode('.', $filterKey, 3);
+            if (array_key_exists($filterKeyParts[0], $output) === false) {
+                $output[$filterKeyParts[0]] = new InputItem($filterKeyParts[0]);
             }
-            if($parser !== null){
-                $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
+            if(sizeof($filterKeyParts) === 3 && $filterKeyParts[1] === '*' && $output[$filterKeyParts[0]]->hasInputItems()){
+                if(!isset($filter_sub[$filterKeyParts[0]]))
+                    $filter_sub[$filterKeyParts[0]] = array();
+                $filter_sub[$filterKeyParts[0]][$filterKeyParts[2]] = $parser;
+            }else {
+                if($parser !== null)
+                    $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
             }
         }
-
-        return $output;
+        foreach($filter_sub as $key => $filter){
+            $this->all_recursive($filter, $output[$key]->getInputItems());
+        }
     }
 
     /**
@@ -485,8 +499,6 @@ class InputHandler implements IInputHandler
     public function requireAttributes(?array $filter = null): array{
         $value_filter = array();
         foreach($this->getValidatorAttributes() as $attribute){
-            if(str_contains($attribute->getName(), '.'))
-                continue;
             if($filter === null || in_array($attribute->getName(), $filter))
                 $value_filter[$attribute->getName()] = $attribute->getType();
         }
@@ -500,8 +512,6 @@ class InputHandler implements IInputHandler
     public function requireAttributeValues(?array $filter = null): array{
         $value_filter = array();
         foreach($this->getValidatorAttributes() as $attribute){
-            if(str_contains($attribute->getName(), '.'))
-                continue;
             if($filter === null || in_array($attribute->getName(), $filter))
                 $value_filter[$attribute->getName()] = $attribute->getType();
         }

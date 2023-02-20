@@ -1,6 +1,7 @@
 <?php
 
 use Pecee\Http\Input\InputFile;
+use Pecee\Http\Input\InputValidator;
 use Pecee\Http\Request;
 
 require_once 'Dummy/DummyMiddleware.php';
@@ -270,6 +271,57 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
         // Reset
         $_GET = [];
         $_POST = [];
+    }
+
+    public function testAllNested()
+    {
+        global $_POST;
+
+        $_POST = [
+            'data' => array(
+                'id' => "1",
+                'name' => 'Max',
+                'company' => ''
+            )
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+
+        TestRouter::post('/test', 'DummyController@method5');
+
+        $output = TestRouter::debugOutput('/test', 'post');
+
+        $this->assertEquals(json_encode(array(
+            'data' => array(
+                'id' => 1,
+                'name' => 'Max',
+                'company' => null
+            )
+        )), $output);
+    }
+
+    public function testAllNestedValidation()
+    {
+        global $_POST;
+
+        $_POST = [
+            'data' => array(
+                'id' => "1"
+            )
+        ];
+
+        $request = new Request(false);
+        $request->setMethod('post');
+        TestRouter::setRequest($request);
+        InputValidator::$parseAttributes = true;
+
+        $this->expectException(\Pecee\Http\Input\Exceptions\InputValidationException::class);
+
+        TestRouter::post('/test', 'DummyController@method5');
+
+        TestRouter::debug('/test', 'post');
     }
 
     protected function generateFile()
