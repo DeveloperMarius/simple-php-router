@@ -41,6 +41,14 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
             'names' => $this->names,
             'day' => $this->day,
             'sodas' => $this->sodas,
+            'assoc' => [
+                array(
+                    'test' => 'data'
+                ),
+                array(
+                    'test' => 'data2'
+                )
+            ]
         ];
         $request = new Request(false);
 
@@ -64,6 +72,10 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($handler->value('names', null, 'get'));
         $this->assertNull($handler->find('names', null, 'get')->getValue());
         $this->assertEquals($this->sodas, $handler->value('sodas'));
+
+        //Nested
+        $this->assertCount(1, $handler->all(['test.non-existing']));
+        $this->assertCount(2, $handler->values(['assoc.*.test', 'assoc.*.test2'])['assoc'][0]);
 
         $objects = $handler->find('names');
 
@@ -275,6 +287,7 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
 
     public function testAllNested()
     {
+        TestRouter::resetRouter();
         global $_POST;
 
         $_POST = [
@@ -304,6 +317,7 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
 
     public function testAllNestedValidation()
     {
+        TestRouter::resetRouter();
         global $_POST;
 
         $_POST = [
