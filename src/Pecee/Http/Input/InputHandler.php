@@ -249,9 +249,13 @@ class InputHandler implements IInputHandler
         foreach ($array as $key => $value) {
 
             // Handle array input
-            if (is_array($value) === true && array_keys($value) !== range(0, count($value) - 1)) {
-                //Parse again if associative array
-                $value = $this->parseInputItem($value);
+            if (is_array($value) === true) {
+                if(array_keys($value) !== range(0, count($value) - 1)){
+                    //Parse again if associative array
+                    $value = $this->parseInputItem($value);
+                }else if(count($value) > 0 && is_array($value[0])){
+                    $value = array_map(fn($item) => $this->parseInputItem($item), $value);
+                }
             }
 
             if($value === '' && self::$handleEmptyStringAsNull)
@@ -444,6 +448,7 @@ class InputHandler implements IInputHandler
         }
 
         $keys = count($filter) > 0 && !is_numeric(array_key_first($filter)) ? array_keys($filter) : $filter;
+        $keys = array_map(fn($key) => explode('.', $key)[0], $keys);
 
         $output = (count($keys) > 0) ? array_intersect_key($output, array_flip($keys)) : $output;
 
@@ -452,7 +457,7 @@ class InputHandler implements IInputHandler
         return $output;
     }
 
-    private function all_recursive(array $filter, array $output){
+    private function all_recursive(array $filter, array &$output){
         $filter_sub = array();
         foreach ($filter as $filterKey => $parser) {
             if(is_int($filterKey)){
@@ -473,7 +478,15 @@ class InputHandler implements IInputHandler
             }
         }
         foreach($filter_sub as $key => $filter){
-            $this->all_recursive($filter, $output[$key]->getInputItems());
+            $items = $output[$key]->getInputItems();
+            if(array_keys($items) !== range(0, count($items) - 1)){
+                $this->all_recursive($filter, $items);
+            }else{
+                foreach($items as &$item){
+                    $this->all_recursive($filter, $item);
+                }
+            }
+            $output[$key]->setValue($items);
         }
     }
 

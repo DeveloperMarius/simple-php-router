@@ -57,7 +57,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -92,7 +92,7 @@ class InputItem implements /*ArrayAccess,*/ IInputItem, IteratorAggregate
      */
     public function hasInputItems(): bool
     {
-        return is_array($this->value) && array_keys($this->value) !== range(0, count($this->value) - 1);
+        return is_array($this->value) && (array_keys($this->value) !== range(0, count($this->value) - 1) || (sizeof($this->value) > 0 && is_array($this->value[0])));
     }
 
     /**
