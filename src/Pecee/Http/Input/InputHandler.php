@@ -475,7 +475,7 @@ class InputHandler implements IInputHandler
                 $filter_sub[$filterKeyParts[0]][$filterKeyParts[1]] = $parser;
             }else {
                 if($parser !== null)
-                    $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
+                    $output[explode('.', $filterKey)[0]]->parser()->parseFromSetting($parser)->getValue();
             }
         }
         foreach($filter_sub as $key => $filter){
