@@ -89,6 +89,11 @@ class EventHandler implements IEventHandler
     public const EVENT_RENDER_MIDDLEWARES = 'onRenderMiddlewares';
 
     /**
+     * Fires after the default route validators succeed
+     */
+    public const EVENT_RENDER_VALIDATORS = 'onRenderValidators';
+
+    /**
      * Fires before the CSRF-verifier is rendered.
      */
     public const EVENT_RENDER_CSRF = 'onRenderCsrfVerifier';
@@ -113,6 +118,7 @@ class EventHandler implements IEventHandler
         self::EVENT_LOAD_EXCEPTIONS,
         self::EVENT_RENDER_EXCEPTION,
         self::EVENT_RENDER_MIDDLEWARES,
+        self::EVENT_RENDER_VALIDATORS,
         self::EVENT_RENDER_CSRF,
     ];
 
