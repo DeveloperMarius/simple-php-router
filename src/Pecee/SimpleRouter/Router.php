@@ -424,15 +424,16 @@ class Router
                                 continue;
                             if($routeParameterValidator !== null && $routeParameterValidator->validateData($route->getParameters())->fails())
                                 continue;
-                            $this->fireEvents(EventHandler::EVENT_RENDER_VALIDATORS, [
-                                'route' => $route
-                            ]);
-
-                            $output = $this->handleRouteRewrite($key, $url);
-                            if($output !== null){
-                                return $output;
-                            }
                         }
+
+                        $output = $this->handleRouteRewrite($key, $url);
+                        if($output !== null){
+                            return $output;
+                        }
+
+                        $this->fireEvents(EventHandler::EVENT_RENDER_VALIDATORS, [
+                            'route' => $route
+                        ]);
                     }
 
                     $methodNotAllowed = false;
