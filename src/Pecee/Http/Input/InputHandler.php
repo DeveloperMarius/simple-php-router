@@ -464,17 +464,18 @@ class InputHandler implements IInputHandler
                 $filterKey = $parser;
                 $parser = null;
             }
-            $filterKeyParts = explode('.', $filterKey, 3);
+            $filterKey = str_replace('.*', '', $filterKey);
+            $filterKeyParts = explode('.', $filterKey, 2);
             if (array_key_exists($filterKeyParts[0], $output) === false) {
                 $output[$filterKeyParts[0]] = new InputItem($filterKeyParts[0]);
             }
-            if(sizeof($filterKeyParts) === 3 && $filterKeyParts[1] === '*' && $output[$filterKeyParts[0]]->hasInputItems()){
+            if(sizeof($filterKeyParts) === 2 && $output[$filterKeyParts[0]]->hasInputItems()){
                 if(!isset($filter_sub[$filterKeyParts[0]]))
                     $filter_sub[$filterKeyParts[0]] = array();
-                $filter_sub[$filterKeyParts[0]][$filterKeyParts[2]] = $parser;
+                $filter_sub[$filterKeyParts[0]][$filterKeyParts[1]] = $parser;
             }else {
                 if($parser !== null)
-                    $output[$filterKey]->parser()->parseFromSetting($parser)->getValue();
+                    $output[explode('.', $filterKey)[0]]->parser()->parseFromSetting($parser)->getValue();
             }
         }
         foreach($filter_sub as $key => $filter){

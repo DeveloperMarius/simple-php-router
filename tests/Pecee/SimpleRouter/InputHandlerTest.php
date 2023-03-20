@@ -43,12 +43,23 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
             'sodas' => $this->sodas,
             'assoc' => [
                 array(
-                    'test' => 'data'
+                    'test' => 'data',
+                    'assoc4' => array(
+                        'id' => 1
+                    )
                 ),
                 array(
-                    'test' => 'data2'
+                    'test' => 'data2',
+                    'assoc4' => array(
+                        'id' => 1
+                    )
                 )
-            ]
+            ],
+            'assoc2' => array(
+                'assoc3' => array(
+                    'id' => 1
+                )
+            )
         ];
         $request = new Request(false);
 
@@ -75,7 +86,10 @@ class InputHandlerTest extends \PHPUnit\Framework\TestCase
 
         //Nested
         $this->assertCount(1, $handler->all(['test.non-existing']));
-        $this->assertCount(2, $handler->values(['assoc.*.test', 'assoc.*.test2'])['assoc'][0]);
+        $this->assertCount(3, $handler->values(['assoc.*.test', 'assoc.*.test2'])['assoc'][0]);
+        $this->assertCount(3, $handler->values(['assoc.*.assoc4.id', 'assoc.*.assoc4.test', 'assoc.*.test2'])['assoc'][0]);
+        $this->assertCount(2, $handler->values(['assoc.*.assoc4.id', 'assoc.*.assoc4.test', 'assoc.*.test2'])['assoc'][0]['assoc4']);
+        $this->assertCount(2, $handler->values(['assoc2.assoc3.id', 'assoc2.assoc3.test'])['assoc2']['assoc3']);
 
         $objects = $handler->find('names');
 
