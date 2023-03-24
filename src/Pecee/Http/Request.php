@@ -133,6 +133,11 @@ class Request
             $this->headers[strtolower($key)] = $value;
             $this->headers[str_replace('_', '-', strtolower($key))] = $value;
         }
+        if(function_exists('apache_request_headers')){
+            foreach(apache_request_headers() as $key => $value){
+                $this->headers[strtolower($key)] = $value;
+            }
+        }
 
         $this->setHost($this->getHeader('http-host'));
 
