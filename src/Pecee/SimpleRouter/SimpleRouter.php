@@ -437,7 +437,6 @@ class SimpleRouter
                  * @var $attribute_attr \Pecee\Http\Input\Attributes\Route
                  */
                 $attribute_attr = $attribute->newInstance();
-                error_log(json_encode($group_prefix . $attribute_attr->getRoute() . '-' . $attribute_attr->getMethod() . '-' . $class->getNamespaceName() . $class->getShortName() . '-' . $method->getName()));
 
                 $route = new RouteUrl($group_prefix . $attribute_attr->getRoute(), sprintf('%s@%s', '\\' . $class->getName(), $method->getName()));
                 $route->setRequestMethods([$attribute_attr->getMethod()]);
