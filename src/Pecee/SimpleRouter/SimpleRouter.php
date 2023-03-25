@@ -416,36 +416,35 @@ class SimpleRouter
 
     public static function loadRoutes(string $controller)
     {
-        $group = new RouteGroup();
+        $group_settings = array();
+        $group_prefix = '';
 
         $class = new \ReflectionClass($controller);
         $attributes = $class->getAttributes(\Pecee\Http\Input\Attributes\RouteGroup::class);
         if(sizeof($attributes) > 0){
             /**
-             * @var $attribute RouteGroup
+             * @var $attribute \Pecee\Http\Input\Attributes\RouteGroup
              */
             $attribute = $attributes[0]->newInstance();
-            $group->setPrefix($attribute->getRoute());
-            if($attribute->getSettings() !== null)
-                $group->setSettings($attribute->getSettings());
+            $group_prefix = $attribute->getRoute();
+            $group_settings = $attribute->getSettings() ?? array();
         }
 
         foreach($class->getMethods() as $method){
             $attributes = $method->getAttributes(\Pecee\Http\Input\Attributes\Route::class);
             foreach($attributes as $attribute){
                 /**
-                 * @var $attribute_attr Route
+                 * @var $attribute_attr \Pecee\Http\Input\Attributes\Route
                  */
                 $attribute_attr = $attribute->newInstance();
+                error_log(json_encode($group_prefix . $attribute_attr->getRoute() . '-' . $attribute_attr->getMethod() . '-' . $class->getNamespaceName() . $class->getShortName() . '-' . $method->getName()));
 
-                $route = new RouteUrl($attribute_attr->getRoute(), sprintf('%s@%s', $class->getName(), $method->getName()));
+                $route = new RouteUrl($group_prefix . $attribute_attr->getRoute(), sprintf('%s@%s', '\\' . $class->getName(), $method->getName()));
                 $route->setRequestMethods([$attribute_attr->getMethod()]);
-                if($attribute_attr->getSettings() !== null)
-                    $route->setSettings($attribute_attr->getSettings());
-                $route->setGroup($group);
+                $route->setSettings(array_merge($attribute_attr->getSettings() ?? array(), $group_settings));
+
                 static::router()->addRoute($route);
             }
-
         }
     }
 
