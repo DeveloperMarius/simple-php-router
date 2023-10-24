@@ -98,6 +98,7 @@ class InputHandler implements IInputHandler
 
         /* Get body */
         $this->originalBodyPlain = file_get_contents('php://input');
+        error_log($this->originalBodyPlain);
 
         /* Parse body */
         if (in_array($this->request->getMethod(), Request::$requestTypesPost, false)) {
