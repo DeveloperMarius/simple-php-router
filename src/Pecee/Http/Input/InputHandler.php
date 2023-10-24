@@ -341,6 +341,8 @@ class InputHandler implements IInputHandler
         foreach($inputs as $key => $input){
             if ($input instanceof IInputItem) {
                 $values[$key] = $input->getValue();
+            }else{
+                $values[$key] = $input;
             }
         }
 
