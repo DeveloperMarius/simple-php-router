@@ -400,7 +400,7 @@ class Request
      */
     public function isAjax(): bool
     {
-        return (strtolower($this->getHeader('http-x-requested-with')) === 'xmlhttprequest');
+        return (strtolower($this->getHeader('http-x-requested-with') ?? '') === 'xmlhttprequest');
     }
 
     /**
