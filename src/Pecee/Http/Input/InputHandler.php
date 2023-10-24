@@ -104,7 +104,7 @@ class InputHandler implements IInputHandler
             switch($this->request->getContentType()){
                 case Request::CONTENT_TYPE_JSON:
                     $body = json_decode($this->originalBodyPlain, true);
-                    if ($body !== false) {
+                    if ($body !== false && $body !== null) {
                         $this->originalBody = $body;
                         $this->data = $this->parseInputItem($body);
                     }
