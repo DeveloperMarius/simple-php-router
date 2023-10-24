@@ -98,7 +98,6 @@ class InputHandler implements IInputHandler
 
         /* Get body */
         $this->originalBodyPlain = file_get_contents('php://input');
-        error_log($this->originalBodyPlain);
 
         /* Parse body */
         if (in_array($this->request->getMethod(), Request::$requestTypesPost, false)) {
@@ -250,13 +249,14 @@ class InputHandler implements IInputHandler
         foreach ($array as $key => $value) {
 
             // Handle array input
-            if (is_array($value) === true) {
-                if(array_keys($value) !== range(0, count($value) - 1)){
+            if (is_array($value) === true && count($value) > 0) {
+                $value = $this->parseInputItem($value);
+                /*if(array_keys($value) !== range(0, count($value) - 1)){
                     //Parse again if associative array
                     $value = $this->parseInputItem($value);
                 }else if(count($value) > 0 && is_array($value[0])){
                     $value = array_map(fn($item) => $this->parseInputItem($item), $value);
-                }
+                }*/
             }
 
             if($value === '' && self::$handleEmptyStringAsNull)
