@@ -29,7 +29,7 @@ class Route
      * @param array|null $settings
      * @param string|null $title
      * @param string|null $description
-     * @param string $content_type
+     * @param string $request_content_type
      */
     public function __construct(
         #[ExpectedValues([Route::GET, Route::POST, Route::PUT, Route::PATCH, Route::DELETE, Route::OPTIONS])] private string $method,
@@ -37,7 +37,7 @@ class Route
         private ?array $settings = null,
         private ?string $title = null,
         private ?string $description = null,
-        #[ExpectedValues([Request::CONTENT_TYPE_JSON, Request::CONTENT_TYPE_FORM_DATA, Request::CONTENT_TYPE_X_FORM_ENCODED, 'text/plain'])] private string $content_type = Request::CONTENT_TYPE_JSON
+        #[ExpectedValues([Request::CONTENT_TYPE_JSON, Request::CONTENT_TYPE_FORM_DATA, Request::CONTENT_TYPE_X_FORM_ENCODED, 'text/plain'])] private string $request_content_type = Request::CONTENT_TYPE_JSON
     ){}
 
     /**
@@ -83,8 +83,8 @@ class Route
     /**
      * @return string
      */
-    public function getContentType(): string
+    public function getRequestContentType(): string
     {
-        return $this->content_type;
+        return $this->request_content_type;
     }
 }
