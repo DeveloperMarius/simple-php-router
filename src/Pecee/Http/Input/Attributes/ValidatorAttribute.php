@@ -20,11 +20,13 @@ class ValidatorAttribute
      * @param string|null $name
      * @param string|null $type
      * @param string|array $validator
+     * @param mixed|null $example
      */
     public function __construct(
         private ?string $name = null,
         ?string $type = null,
-        string|array $validator = array()
+        string|array $validator = array(),
+        private mixed $example = null
     ){
         if(is_string($validator))
             $validator = explode('|', $validator);
@@ -113,6 +115,14 @@ class ValidatorAttribute
         if(!in_array('nullable', $validator))
             array_unshift($validator, 'required');
         return $validator;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExample(): mixed
+    {
+        return $this->example;
     }
 
 }
