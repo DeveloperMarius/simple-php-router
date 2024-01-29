@@ -35,7 +35,15 @@ class InputValidationException extends Exception
     {
         if($this->getValidation() === null)
             return array();
-        return $this->getValidation()->errors()->all();
+        $errors = array();
+        foreach ($this->getValidation()->errors()->toArray() as $key => $rule_errors){
+            foreach ($rule_errors as $rule => $message){
+                if(!isset($errors[$key]))
+                    $errors[$key] = array();
+                $errors[$key][$rule] = (string) $message;
+            }
+        }
+        return $errors;
     }
 
     /**
