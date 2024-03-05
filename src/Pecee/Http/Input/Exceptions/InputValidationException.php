@@ -65,7 +65,13 @@ class InputValidationException extends Exception
      */
     public function getDetailedMessage(): string
     {
-        return 'Failed to validate inputs: ' . (empty($this->getErrorMessages()) ? 'keine' : join('; ', $this->getErrorMessages()));
+        $messages = array();
+        foreach ($this->getErrorMessages() as $key => $rules){
+            foreach ($rules as $rule => $message){
+                $messages[] = $key . ': ' . $rule . ' - ' . $message;
+            }
+        }
+        return 'Failed to validate inputs: ' . (sizeof($messages) === 0 ? 'keine' : join(';', $messages));
     }
 
 }
