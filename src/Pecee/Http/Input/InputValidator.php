@@ -252,7 +252,7 @@ class InputValidator
                                     $routeAttribute->addValidator('nullable');
                             }
                             $settings[$routeAttribute->getName()] = $routeAttribute->getFullValidator();
-                            $parsedData[$routeAttribute->getName()] = (new InputParser(new InputItem($routeAttribute->getName(), $parsedData[$routeAttribute->getName()] ?? null)))->parseFromSetting($routeAttribute->getType())->getValue();
+                            $parsedData[$routeAttribute->getName()] = $routeAttribute->getType() !== null ? (new InputParser(new InputItem($routeAttribute->getName(), $parsedData[$routeAttribute->getName()] ?? null)))->parseFromSetting($routeAttribute->getType())->getValue() : $parsedData[$routeAttribute->getName()] ?? null;
                         }
                     }
                     $routeAttributeValidator = InputValidator::make()->setRules($settings);
