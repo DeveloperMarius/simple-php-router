@@ -47,6 +47,16 @@ interface ILoadableRoute extends IRoute
     public function prependUrl(string $url): self;
 
     /**
+     * Sets the router name, which makes it easier to obtain the url or router at a later point.
+     * Alias for LoadableRoute::setName().
+     *
+     * @param string|array $name
+     * @return static
+     * @see LoadableRoute::setName()
+     */
+    public function name(array|string $name): self;
+
+    /**
      * Returns the provided name for the router.
      *
      * @return string|null
