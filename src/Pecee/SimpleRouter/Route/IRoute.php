@@ -156,6 +156,15 @@ interface IRoute
     public function setWhere(array $options): self;
 
     /**
+     * Add regular expression parameter match.
+     * Alias for LoadableRoute::where()
+     *
+     * @param array $options
+     * @return static
+     */
+    public function where(array $options): self;
+
+    /**
      * Get parameters
      *
      * @return array
