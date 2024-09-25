@@ -23,7 +23,7 @@ class BaseCsrfVerifier implements IMiddleware
      * Urls to include. Can be used to include urls from a certain path.
      * @var array|null
      */
-    protected ?array $include;
+    protected ?array $include = null;
 
     /**
      * @var ITokenProvider
@@ -60,7 +60,7 @@ class BaseCsrfVerifier implements IMiddleware
 
             if ($skip === true) {
 
-                if(is_array($this->include) === true && count($this->include) > 0) {
+                if($this->include !== null && count($this->include) > 0) {
                     foreach($this->include as $includeUrl) {
                         $includeUrl = rtrim($includeUrl, '/');
                         if ($includeUrl[strlen($includeUrl) - 1] === '*') {
