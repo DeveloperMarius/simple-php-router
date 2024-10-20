@@ -177,6 +177,20 @@ class RouteGroup extends Route implements IGroupRoute
     {
         return $this->prefix;
     }
+    
+    /**
+     * Sets the router name, which makes it easier to obtain the url or router at a later point.
+     * Alias for RouteGroup::setName().
+     *
+     * @param string $name
+     * @return static
+     * @see RouteGroup::setName()
+     */
+    public function name(array|string $name): IGroupRoute
+    {
+        return $this->setName($name);
+    }
+    
     /**
      * @param string $name
      * @return static
